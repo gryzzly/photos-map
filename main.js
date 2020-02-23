@@ -33,7 +33,11 @@ function build (done) {
     .forEach(fileName => {
       const file = files[fileName];
       const body = renderToString(
-        h(App, { url: fileName, ...file, contents: file.contents.toString() })
+        h(App, {
+          ...file,
+          url: fileName,
+          contents: file.contents.toString()
+        })
       );
       files[fileName].contents = document(file, body);
     });
