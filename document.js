@@ -32,11 +32,13 @@ export default function(file, body) {
           height="300%"
       >
         <feGaussianBlur
-          stdDeviation="3"
+          stdDeviation="2"
         />
       </filter>
     </defs>
   </svg>
+  
+  <svg class="svg-canvas"></svg>
   
   <div class="root">
   ${body}
