@@ -39,8 +39,6 @@ export default function(file, body) {
     </defs>
   </svg>
   
-  <svg class="svg-canvas"></svg>
-  
   <div class="root">
   ${body}
   </div><!-- root -->

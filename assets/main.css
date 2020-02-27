@@ -21,6 +21,10 @@
   pointer-events: none;
   z-index: 9999;
 }
+.svg-canvas line {
+  stroke: #bbb;
+  stroke-width: 1px;
+}
 
 html, body, .root, main {
   height: 100%;
@@ -31,6 +35,8 @@ main {
   flex-direction: row-reverse;
   padding: 10px;
   font-family: 'IBM Plex Mono', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 a:visited {

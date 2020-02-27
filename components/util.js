@@ -1,22 +1,22 @@
-export function throttle (callback, limit) {
-  let wait = false;
-  return function () {
-    if (!wait) {
-      callback.apply(null, arguments);
-      wait = true;
-      setTimeout(function () {
-        wait = false;
-      }, limit);
-    }
-  }
-}
+export function rafDebounce (func, execAsap) {
+  let timeout;
 
-export function debounce (func, delay) {
-  let inDebounce;
-  return function() {
-    const context = this;
-    const args = arguments;
-    clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => func.apply(context, args), delay);
+  return function debounced() {
+    let obj = this, args = arguments;
+
+    function delayed() {
+      if (!execAsap) {
+        func.apply(obj, args);
+      }
+      timeout = null;
+    };
+
+    if (timeout) {
+      cancelAnimationFrame(timeout);
+    } else if (execAsap) {
+      func.apply(obj, args);
+    }
+
+    timeout = requestAnimationFrame(delayed);
   };
-};
+}

@@ -5,7 +5,7 @@ const html = htm.bind(h);
 import LinkToItem from './LinkToItem.js';
 import ContentPhoto from "./ContentPhoto.js";
 
-import {throttle} from "./util.js";
+import {rafDebounce} from "./util.js";
 
 export default class App extends Component {
   constructor() {
@@ -15,17 +15,17 @@ export default class App extends Component {
 
   componentDidMount() {
     this.props.onScroll(this.ref.current.scrollTop);
-    this.ref.current.addEventListener('scroll', throttle(() => {
+    this.ref.current.addEventListener('scroll', rafDebounce(() => {
       this.props.onScroll(this.ref.current.scrollTop);
-    }, 16));
+    }, true));
   }
-  render({
-    list = [],
-    contents = '',
-    images = {},
-    name = '',
-    onMount,
-  }) {
+  render(props) {
+    const list = props.list || [];
+    const contents = props.contents || '';
+    const images = props.images || {};
+    const name = props.name || '';
+    const onMount = props.onMount;
+
     return html`<div class="contents" ref=${this.ref}>
       <h1 class="contents__title">
         <a href="/">Home</a>
