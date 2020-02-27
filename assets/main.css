@@ -30,10 +30,15 @@ main {
   display: flex;
   flex-direction: row-reverse;
   padding: 10px;
+  font-family: 'IBM Plex Mono', sans-serif;
+}
+
+a:visited {
+  color: initial;
 }
 
 #map {
-  flex: 1;
+  flex: 1.5;
 }
 #map > img {
   width: 100%;
@@ -47,6 +52,14 @@ main {
 
 .contents ul {
   list-style: none;
+}
+
+.contents h1 {
+  margin-bottom: 1em;
+}
+.contents p {
+  margin-bottom: 1em;
+  line-height: 1.4;
 }
 
 .contents__title {

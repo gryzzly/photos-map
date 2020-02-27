@@ -13,7 +13,10 @@ function gatherMarkerPositions (photoMarkers, map, mapOffset) {
 }
 
 export default class Map extends Component {
-  ref = createRef();
+  constructor() {
+    super();
+    this.ref = createRef();
+  }
 
   shouldComponentUpdate() {
     return false;
@@ -33,8 +36,8 @@ export default class Map extends Component {
     L.tileLayer(
       // 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png?{foo}',
       // 'https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
-      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-      // 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      // 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
       {
         foo: 'bar',
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -51,8 +54,8 @@ export default class Map extends Component {
           weight: 10,
           // dashArray: '10, 20',
           lineCap: 'square', // avoid round borders.
-          color: `hsl(${312 + (index * Math.random() * 45)}, 70%, 95%)`,// pink
-          // color: `#fff`,
+          // color: `hsl(${312 + (index * Math.random() * 45)}, 70%, 95%)`,// pink
+          color: `#fff`,
         });
 
         polyline.on('click', () => onCollectionClick(path));
@@ -62,12 +65,20 @@ export default class Map extends Component {
       const topLines = [];
       Object.keys(imageLocations).forEach(function (path, index) {
         const polyline = L.polyline(imageLocations[path], {
-          weight: 1.5,
-          dashArray: '3 4',
+          weight: 3,
+          // dashArray: '5 10',
           lineCap: 'square' , // Optional, just to avoid round borders.
-          color: '#555',
+          color: 'rgb(0,91,180)',
+        });
+        const polyline2 = L.polyline(imageLocations[path], {
+          weight: 6,
+          // dashArray: '3 4',
+          lineCap: 'square' , // Optional, just to avoid round borders.
+          color: '#fff',
         });
         polyline.on('click', () => onCollectionClick(path));
+        polyline2.on('click', () => onCollectionClick(path));
+        topLines.push(polyline2);
         topLines.push(polyline);
       });
       const linesGroup = L.featureGroup(topLines).addTo(map);

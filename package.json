@@ -5,7 +5,8 @@
   "main": "index.js",
   "module": "main.js",
   "scripts": {
-    "start": "node -r esm ./run.js"
+    "start": "node -r esm ./run.js",
+    "build": "node -r esm ./main.js run"
   },
   "author": "",
   "license": "ISC",

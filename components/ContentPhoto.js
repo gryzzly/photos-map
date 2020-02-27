@@ -5,7 +5,10 @@ const html = htm.bind(h);
 import {debounce} from "./util.js";
 
 export default class ContentPhoto extends Component {
-  ref = createRef();
+  constructor() {
+    super();
+    this.ref = createRef();
+  }
 
   componentDidMount() {
     this.props.onMount(

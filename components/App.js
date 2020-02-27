@@ -23,9 +23,9 @@ function drawSvgLine(x1, y1, y21, x2, y2) {
     "http://www.w3.org/2000/svg",
     "line"
   );
-  line.setAttribute('stroke', '#ccc');
+  line.setAttribute('stroke', '#bbb');
   line.setAttribute('stroke-width', '1px');
-  // line.setAttribute('stroke-dasharray', 4);
+  // line.setAttribute('stroke-dasharray', 10);
   line.setAttribute('x1', x1);
   line.setAttribute('y1', y1 + 1);
   line.setAttribute('x2', x2);
@@ -35,9 +35,9 @@ function drawSvgLine(x1, y1, y21, x2, y2) {
     "http://www.w3.org/2000/svg",
     "line"
   );
-  line2.setAttribute('stroke', '#ccc');
+  line2.setAttribute('stroke', '#bbb');
   line2.setAttribute('stroke-width', '1px');
-  // line2.setAttribute('stroke-dasharray', 5);
+  // line2.setAttribute('stroke-dasharray', 10);
   line2.setAttribute('x1', x1);
   line2.setAttribute('y1', y21 - 1);
   line2.setAttribute('x2', x2);
@@ -48,9 +48,13 @@ function drawSvgLine(x1, y1, y21, x2, y2) {
 }
 
 export default class App extends Component {
-  positions = {};
-  markerPositions = {};
-  scrollOffset = 0;
+  constructor() {
+    super();
+    this.positions = {};
+    this.markerPositions = {};
+    this.scrollOffset = 0;
+  }
+
 
   onMapCollectionClick = (collection) => {
     window.location = `/${collection}/index.html`

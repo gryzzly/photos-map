@@ -8,13 +8,16 @@ import ContentPhoto from "./ContentPhoto.js";
 import {throttle} from "./util.js";
 
 export default class App extends Component {
-  ref = createRef();
+  constructor() {
+    super();
+    this.ref = createRef();
+  }
 
   componentDidMount() {
     this.props.onScroll(this.ref.current.scrollTop);
     this.ref.current.addEventListener('scroll', throttle(() => {
       this.props.onScroll(this.ref.current.scrollTop);
-    }, 32));
+    }, 16));
   }
   render({
     list = [],
