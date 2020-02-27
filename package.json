@@ -6,7 +6,8 @@
   "module": "main.js",
   "scripts": {
     "start": "node -r esm ./run.js",
-    "build": "node -r esm ./main.js run"
+    "build": "node -r esm ./main.js run",
+    "postinstall": "snowpack"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "preact": "^10.2.1",
     "preact-render-to-string": "^5.1.4",
     "preact-router": "^3.2.1",
-    "serve-static": "^1.14.1"
+    "serve-static": "^1.14.1",
+    "snowpack": "^1.5.0"
   }
 }
