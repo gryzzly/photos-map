@@ -30,5 +30,12 @@
     "serve-static": "^1.14.1",
     "sharp": "^0.24.1",
     "snowpack": "^1.5.0"
+  },
+  "snowpack": {
+    "webDependencies": [
+      "htm",
+      "preact",
+      "preact-render-to-string"
+    ]
   }
 }
