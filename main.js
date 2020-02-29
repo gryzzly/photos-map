@@ -38,11 +38,8 @@ function build (done) {
       ],
     }
   ]))
+  // render component tree with file data
   .use(function (files, metalsmith, done) {
-    // get layout file defining html component and a place to insert prepared
-    // HTML
-    // render the file and toBuffer it into contents
-
     Object.keys(files)
     .filter(fileName => fileName.endsWith('.html'))
     .forEach(fileName => {

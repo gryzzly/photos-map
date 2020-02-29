@@ -10,13 +10,21 @@ const placeholderSrc = (width, height) => `data:image/svg+xml,` +
     viewBox="0 0 ${width} ${height}"
   />`.trim());
 
+const OBSERVER_OPTIONS = {
+  root: null, // relative to document viewport
+  rootMargin: '0px', // margin around root. Values are similar to css property. Unitless values not allowed
+  threshold: .1 // visible amount of item shown in relation to root
+};
+
 export default class ContentPhoto extends Component {
   constructor() {
     super();
+    this.observer = null;
     this.ref = createRef();
-    ['onImagePositionsUpdate', 'onImageLoaded'].forEach(fn => {
-      this[fn] = this[fn].bind(this);
-    })
+    ['onImagePositionsUpdate', 'onImageLoaded', 'onObserverChange']
+      .forEach(fn => {
+        this[fn] = this[fn].bind(this);
+      });
     this.debouncedUpdate = rafDebounce(
       this.onImagePositionsUpdate,
       true
@@ -39,6 +47,18 @@ export default class ContentPhoto extends Component {
     );
   };
 
+  onObserverChange(changes, observer) {
+    const imageElement = this.ref.current;
+    changes.forEach(change => {
+      if (change.intersectionRatio > 0) {
+        imageElement.setAttribute(
+          'srcset',
+          imageElement.getAttribute('data-srcset')
+        );
+      }
+    });
+  }
+
   componentDidMount() {
     const imageElement = this.ref.current;
     this.onImagePositionsUpdate();
@@ -46,27 +66,17 @@ export default class ContentPhoto extends Component {
     imageElement.addEventListener('load', this.onImagePositionsUpdate);
     window.addEventListener('resize', this.debouncedUpdate);
 
-    function onChange(changes, observer) {
-      changes.forEach(change => {
-        if (change.intersectionRatio > 0) {
-          imageElement.setAttribute(
-            'srcset',
-            imageElement.getAttribute('data-srcset')
-          );
-        }
-      });
-    }
+    this.observer = new IntersectionObserver(
+      this.onObserverChange,
+      OBSERVER_OPTIONS
+    );
 
-    let observer = new IntersectionObserver(onChange, {
-      root: null, // relative to document viewport
-      rootMargin: '0px', // margin around root. Values are similar to css property. Unitless values not allowed
-      threshold: .1 // visible amount of item shown in relation to root
-    });
-
-    observer.observe(imageElement);
+    this.observer.observe(imageElement);
   }
 
   componentWillUnmount() {
+    this.observer.disconnect();
+    this.observer = null;
     this.ref.current.removeEventListener('load', this.onImageLoaded);
     this.ref.current.removeEventListener('load', this.onImagePositionsUpdate);
     window.removeEventListener('resize', this.debouncedUpdate);
