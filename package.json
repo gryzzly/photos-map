@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node -r esm ./run.js",
     "build": "node -r esm ./main.js run",
-    "postinstall": "snowpack"
+    "prepare": "snowpack"
   },
   "author": "",
   "license": "ISC",
