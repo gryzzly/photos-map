@@ -8,7 +8,7 @@ const placeholderSrc = (width, height) => `data:image/svg+xml,` +
   encodeURI(`<svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 ${width} ${height}"
-  />`.trim());
+  />`);
 
 const OBSERVER_OPTIONS = {
   root: null, // relative to document viewport
@@ -63,7 +63,6 @@ export default class ContentPhoto extends Component {
     const imageElement = this.ref.current;
     this.onImagePositionsUpdate();
     imageElement.addEventListener('load', this.onImageLoaded);
-    imageElement.addEventListener('load', this.onImagePositionsUpdate);
     window.addEventListener('resize', this.debouncedUpdate);
 
     this.observer = new IntersectionObserver(
@@ -78,23 +77,22 @@ export default class ContentPhoto extends Component {
     this.observer.disconnect();
     this.observer = null;
     this.ref.current.removeEventListener('load', this.onImageLoaded);
-    this.ref.current.removeEventListener('load', this.onImagePositionsUpdate);
     window.removeEventListener('resize', this.debouncedUpdate);
   }
 
   render({img}) {
     return html`<li>
       <a href="${img.fileName}">
-        <img
-          ref=${this.ref}
-          src="${placeholderSrc(img.width, img.height)}"
-          data-srcset="
-            ${img.thumbnail} 1500w,
-            ${img.fileName} 3000w
-          "
-          width="${img.width}"
-          height="${img.height}"
-        />
+        <div class="imageWrapper">
+          <img
+            ref=${this.ref}
+            src="${placeholderSrc(img.width, img.height)}"
+            data-srcset="
+              ${img.thumbnail} 1500w,
+              ${img.fileName} 3000w
+            "
+          />
+        </div>
       </a>
    </li>`;
   }
