@@ -2,7 +2,7 @@ export default function(file, body) {
   return `<!DOCTYPE html>
 <html>
   <head>
-  <title>Mapiado</title>
+  <title>Free Time Managers</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <link href="/main.css" rel="stylesheet" />

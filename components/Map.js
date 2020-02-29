@@ -98,7 +98,7 @@ export default class Map extends Component {
             iconSize: [12, 12],
           })),
         });
-        marker.thumbnail = image.thumbnail;
+        marker.image = image.fileName;
         photoMarkers.addLayer(marker);
       });
     });
@@ -125,7 +125,7 @@ export default class Map extends Component {
 
     this.photoMarkers.eachLayer(marker => {
       const offset = this.map.latLngToContainerPoint(marker.getLatLng());
-      markers[marker.thumbnail] = offset.add([mapOffset.x, mapOffset.y]);
+      markers[marker.image] = offset.add([mapOffset.x, mapOffset.y]);
     });
 
     this.props.onMount(markers);

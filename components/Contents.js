@@ -30,12 +30,14 @@ export default class App extends Component {
       <h1 class="contents__title">
         <a href="/">Home</a>
       </h1>
+      <!-- Generated HTML Contents i.e. Markdown -->
+      ${contents.length > 0 && html`<div>${html([contents])}</div>`}
+
       <!-- Index Page -->
       ${list.length > 0 && html`<ul class="contents__stories_list">
         ${list.map(collection => html`<${LinkToItem} ...${collection} />`)}
       </ul>`}
-      <!-- Generated HTML Contents i.e. Markdown --> 
-      ${contents.length > 0 && html`<div>${html([contents])}</div>`}
+
       <!-- Image Gallery  -->
       ${images[name] &&
         html`<ul class="contents__images_list">

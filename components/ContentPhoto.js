@@ -4,21 +4,32 @@ const html = htm.bind(h);
 
 import {rafDebounce} from "./util.js";
 
+const placeholderSrc = (width, height) => `data:image/svg+xml,` +
+  encodeURI(`<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 ${width} ${height}"
+  />`.trim());
+
 export default class ContentPhoto extends Component {
   constructor() {
     super();
     this.ref = createRef();
-    this.onImagePositionsUpdate = this.onImagePositionsUpdate.bind(this);
+    ['onImagePositionsUpdate', 'onImageLoaded'].forEach(fn => {
+      this[fn] = this[fn].bind(this);
+    })
     this.debouncedUpdate = rafDebounce(
       this.onImagePositionsUpdate,
       true
     );
   }
 
+  onImageLoaded() {
+    this.ref.current.classList.add('loaded');
+  }
+
   onImagePositionsUpdate() {
-    console.log('onImagePositionsUpdate');
     this.props.onMount(
-      this.props.img.thumbnail,
+      this.props.img.fileName,
       {
         top: this.ref.current.offsetTop,
         right: this.ref.current.offsetLeft + this.ref.current.offsetWidth,
@@ -29,19 +40,52 @@ export default class ContentPhoto extends Component {
   };
 
   componentDidMount() {
+    const imageElement = this.ref.current;
     this.onImagePositionsUpdate();
-    this.ref.current.addEventListener('load', this.onImagePositionsUpdate);
+    imageElement.addEventListener('load', this.onImageLoaded);
+    imageElement.addEventListener('load', this.onImagePositionsUpdate);
     window.addEventListener('resize', this.debouncedUpdate);
+
+    function onChange(changes, observer) {
+      changes.forEach(change => {
+        if (change.intersectionRatio > 0) {
+          imageElement.setAttribute(
+            'srcset',
+            imageElement.getAttribute('data-srcset')
+          );
+        }
+      });
+    }
+
+    let observer = new IntersectionObserver(onChange, {
+      root: null, // relative to document viewport
+      rootMargin: '0px', // margin around root. Values are similar to css property. Unitless values not allowed
+      threshold: .1 // visible amount of item shown in relation to root
+    });
+
+    observer.observe(imageElement);
   }
 
   componentWillUnmount() {
+    this.ref.current.removeEventListener('load', this.onImageLoaded);
     this.ref.current.removeEventListener('load', this.onImagePositionsUpdate);
     window.removeEventListener('resize', this.debouncedUpdate);
   }
 
   render({img}) {
     return html`<li>
-      <a href="${img.thumbnail}"><img src="${img.thumbnail}" ref=${this.ref} /></a>
+      <a href="${img.fileName}">
+        <img
+          ref=${this.ref}
+          src="${placeholderSrc(img.width, img.height)}"
+          data-srcset="
+            ${img.thumbnail} 1500w,
+            ${img.fileName} 3000w
+          "
+          width="${img.width}"
+          height="${img.height}"
+        />
+      </a>
    </li>`;
   }
 }

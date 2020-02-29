@@ -9,25 +9,55 @@ function parseDate(s) {
 module.exports = function (options) {
   options = options || {};
   options.collection = options.collection || 'dir';
+  options.processImages = false;
 
-  return function (files, metadata, done) {
-    const imageLocations = Object.keys(files)
+  return async function (files, metadata, done) {
+    const updatedFiles = {
+      processedImages: {},
+      collectionPages: {},
+    };
+
+    const imagesWithLocation = Object.keys(files)
       .filter(fileName => {
         return files[fileName].exif &&
           files[fileName].exif.hasOwnProperty('GPSLatitude')
-      })
-      .map(fileName => {
+      });
+
+    if (options.processImages) {
+      await Promise.all(imagesWithLocation.map(async (fileName) => {
+        const imageFile = files[fileName];
+
+        await sharp(imageFile.contents)
+          .jpeg({
+            progressive: true
+          })
+          .toBuffer()
+          .then(data => {
+            updatedFiles.processedImages[fileName] = {
+              ...imageFile,
+              contents: data
+            };
+          });
+      }));
+    }
+
+    const imageLocations =  imagesWithLocation.map(fileName => {
         const file = files[fileName];
         // add config for this option, to select if file is part of collection
         const collection = path.parse(fileName).dir;
         const position = parseDMS(file.exif.GPSPosition);
+        const width = file.exif.ImageWidth;
+        const height = file.exif.ImageHeight;
 
         return {
           // FIXME: make proper path here
-          thumbnail: `/` + fileName,
+          thumbnail: `/thumbs/` + fileName,
+          fileName: '/' + fileName,
           lat: position.Latitude,
           lng: position.Longitude,
           date: parseDate(file.exif.DateTimeOriginal),
+          width,
+          height,
           collection,
         };
       })
@@ -74,7 +104,9 @@ module.exports = function (options) {
     // allow for having index.md in root of the content to provide some content.
     files['index.html'] = {
       path: 'index.html',
-      contents: '',
+      contents: Boolean(files['index.html'])
+        ? files['index.html'].contents.toString()
+        : '',
       images: imagesByCollection,
       list: collections
     };

@@ -44,7 +44,7 @@ a:visited {
 }
 
 #map {
-  flex: 1.5;
+  flex: 1;
 }
 #map > img {
   width: 100%;
@@ -89,8 +89,14 @@ a:visited {
 .contents__images_list img {
   display: block;
   width: 100%;
-  max-width: 500px;
+  max-width: 40vw;
+  height: auto;
   margin: 0 auto;
+  opacity: 0;
+  transition: opacity .25s;
+}
+.contents__images_list img.loaded {
+  opacity: 1;
 }
 
 .leaflet-marker > img {

@@ -4,6 +4,7 @@ import assets from 'metalsmith-assets';
 import mediaMetadata from './metalsmith-media-metadata';
 import photoLocations from './photo-locations';
 import title from 'metalsmith-title';
+import sharp from 'metalsmith-sharp';
 
 import { h } from 'preact';
 import renderToString from 'preact-render-to-string';
@@ -23,6 +24,20 @@ function build (done) {
   .use(markdown())
   .use(title())
   .use(photoLocations())
+  .use(sharp([
+    {
+      namingPattern: 'thumbs/{dir}/{name}{ext}',
+      methods: [
+        {
+          name: 'resize',
+          args: (metadata) => [
+            Math.round(metadata.width * 0.5),
+            Math.round(metadata.height * 0.5),
+          ],
+        }
+      ],
+    }
+  ]))
   .use(function (files, metalsmith, done) {
     // get layout file defining html component and a place to insert prepared
     // HTML
