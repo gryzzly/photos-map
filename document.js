@@ -52,6 +52,12 @@ export default function(file, body) {
   <script type="module" src="/script.js"></script>
   <script>var privalytics_id="PL-74ADBE";</script>
   <script async src="https://cdn.privalytics.io/privalytics.js"></script>
+
+  <script
+    data-goatcounter="https://freetimemanagers.goatcounter.com/count"
+    async
+    src="//gc.zgo.at/count.js"
+  ></script>
 </body>
 </html>
 `
