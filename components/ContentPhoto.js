@@ -12,8 +12,9 @@ const placeholderSrc = (width, height) => `data:image/svg+xml,` +
 
 const OBSERVER_OPTIONS = {
   root: null, // relative to document viewport
-  rootMargin: '0px', // margin around root. Values are similar to css property. Unitless values not allowed
-  threshold: .1 // visible amount of item shown in relation to root
+  rootMargin: '100px', // margin around root. Values are similar to css
+  // property. Unitless values not allowed
+  threshold: .01 // visible amount of item shown in relation to root
 };
 
 export default class ContentPhoto extends Component {

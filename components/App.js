@@ -14,11 +14,12 @@ function isInViewport (bounding, scrollTop) {
 const TRIANGLE_PADDING = 3;
 
 export default class App extends Component {
-  constructor(props) {
+  constructor({images, gpx, url}) {
     super();
+
     this.imagePositions = {};
-    this.imagesCount =
-        props.images[Object.keys(props.images)[0]].length;
+    this.imagesCount = images[Object.keys(images)[0]].length;
+
     this.state = {
       scrollOffset: 0,
       leftTopX: 0,
@@ -39,6 +40,26 @@ export default class App extends Component {
     ].forEach(function(fn) {
       this[fn] = this[fn].bind(this);
     }, this);
+
+    const derivedCoordinates =
+      Object.keys(images).reduce(function (result, path) {
+        result.lines[path] = images[path];
+        images[path].forEach(image => {
+          result.markers[image.fileName] = image;
+        });
+        return result;
+      }, {
+        lines: {},
+        markers: {}
+      });
+
+    this.state.lines = gpx
+      ? {[url]: gpx.path}
+      : derivedCoordinates.lines;
+
+    this.state.markers = (url === '/' || url === '/index.html')
+      ? {}
+      : derivedCoordinates.markers;
   }
 
   onMapCollectionClick(collection) {
@@ -51,43 +72,45 @@ export default class App extends Component {
 
   setMarkerPositions(markers) {
     this.setState({
-      markerPositions: markers,
-      ...this.getTriangleCoordinates(),
-    });
+      markerPositions: markers
+    }, () => this.setState(
+      // This [the need to pass markers to triangleCoords fn seems like Preact
+      // glitch – inside the setState callback, markerPositions should be
+      // already set, but they are not
+      this.getTriangleCoordinates(markers)
+    ));
   }
 
   updateScrollOffset(scrollTop) {
-    const itemInViewport = (function(positions, scrollOffset) {
-      let item;
-      Object.keys(positions).some(element => {
-        const inViewport = isInViewport(
-          positions[element],
-          scrollOffset
-        );
-        if (inViewport) {
-          item = element;
-          return true;
-        }
-      });
-      return item;
-    } (this.imagePositions, scrollTop));
+    let itemInViewport;
+    Object.keys(this.imagePositions).some(element => {
+      const inViewport = isInViewport(
+        this.imagePositions[element],
+        scrollTop
+      );
+      if (inViewport) {
+        itemInViewport = element;
+        return true;
+      }
+    });
 
     this.setState({
       scrollOffset: scrollTop,
       currentImage: itemInViewport
-    }, () => {
-      this.setState(this.getTriangleCoordinates());
-    });
+    }, () => this.setState(
+      this.getTriangleCoordinates()
+    ));
   };
 
-  getTriangleCoordinates() {
+  getTriangleCoordinates(markers) {
     const {
       currentImage,
       scrollOffset,
-      markerPositions,
     } = this.state;
 
-    if (!currentImage) {
+    const markerPositions = markers || this.state.markerPositions;
+
+    if (!currentImage || !markerPositions[currentImage]) {
       return;
     }
 
@@ -113,15 +136,16 @@ export default class App extends Component {
       rightX,
       rightY,
       currentImage,
+      lines,
+      markers,
     } = state;
 
     return html`<main>
       <${Map}
-        imagesByCollection=${props.images}
-        onCollectionClick=${this.onMapCollectionClick}
-        images=${props.images}
-        url=${props.url}
+        lines=${lines}
+        markers=${markers}
         onMount=${this.setMarkerPositions}
+        onCollectionClick=${this.onMapCollectionClick}
       />
       <${Contents} 
         ...${props} 

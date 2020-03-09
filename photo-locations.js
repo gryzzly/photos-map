@@ -1,4 +1,9 @@
 const path = require('path');
+
+const toGeoJSON = require("@tmcw/togeojson");
+const DOMParser = require("xmldom").DOMParser;
+const simplifyGeoJSON = require('simplify-geojson');
+
 const parseDMS = require('./degrees-minutes-seconds');
 
 function parseDate(s) {
@@ -22,6 +27,31 @@ module.exports = function (options) {
         return files[fileName].exif &&
           files[fileName].exif.hasOwnProperty('GPSLatitude')
       });
+
+    const gpxFilesByCollection = Object.keys(files)
+      .filter(fileName => fileName.endsWith('.gpx'))
+      .reduce((result, fileName) => {
+        const collection = path.parse(fileName).dir;
+        const file = files[fileName];
+        result[collection] = file;
+
+        const xml = new DOMParser().parseFromString(
+          file.contents.toString()
+        );
+
+        const geoJSON = toGeoJSON.gpx(xml);
+        const simplifiedGeoJSON = simplifyGeoJSON(geoJSON, 0.0009);
+
+        result[collection].gpx =
+          simplifiedGeoJSON.features.reduce((result, feature) => {
+            feature.geometry.coordinates.forEach(([lng, lat]) => {
+              result.path.push({ lat, lng });
+            });
+            return result;
+          }, { path: [] });
+
+        return result;
+      }, {});
 
     if (options.processImages) {
       await Promise.all(imagesWithLocation.map(async (fileName) => {
@@ -80,10 +110,8 @@ module.exports = function (options) {
           contents: indexExists ? indexFile.contents : Buffer.from(collectionName),
           title: indexExists  ? indexFile.title : '',
           name: collectionName,
-          indexExists,
         }
       });
-
 
     // update or create index files for collection keys
     collections.forEach(function (collection) {
@@ -96,6 +124,9 @@ module.exports = function (options) {
         images: {
           [collectionName]: imagesByCollection[collectionName]
         },
+        gpx:
+            gpxFilesByCollection[collectionName] &&
+            gpxFilesByCollection[collectionName].gpx,
       };
     });
 

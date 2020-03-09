@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tmcw/togeojson": "^3.2.0",
     "connect": "^3.7.0",
     "connect-history-api-fallback": "^1.6.0",
     "dist-exiftool": "^10.53.0",
@@ -29,7 +30,9 @@
     "preact-router": "^3.2.1",
     "serve-static": "^1.14.1",
     "sharp": "^0.24.1",
-    "snowpack": "^1.5.0"
+    "simplify-geojson": "^1.0.3",
+    "snowpack": "^1.5.0",
+    "xmldom": "^0.2.1"
   },
   "snowpack": {
     "webDependencies": [
