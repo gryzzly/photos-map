@@ -3,6 +3,7 @@ import markdown from 'metalsmith-markdown';
 import assets from 'metalsmith-assets';
 import mediaMetadata from './metalsmith-media-metadata';
 import photoLocations from './photo-locations';
+import htm from './metalsmith-htm';
 import title from 'metalsmith-title';
 import sharp from 'metalsmith-sharp';
 
@@ -39,23 +40,9 @@ function build (done) {
     }
   ]))
   // render component tree with file data
-  .use(function (files, metalsmith, done) {
-    Object.keys(files)
-    .filter(fileName => fileName.endsWith('.html'))
-    .forEach(fileName => {
-      const file = files[fileName];
-      const body = renderToString(
-        h(App, {
-          ...file,
-          url: fileName,
-          contents: file.contents.toString()
-        })
-      );
-      files[fileName].contents = document(file, body);
-    });
-
-    done();
-  })
+  .use(htm({
+    document
+  }))
   // stuff that is not processed but is simply copied over
   .use(assets({
     // relative to the working directory
