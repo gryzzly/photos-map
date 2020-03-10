@@ -159,19 +159,14 @@ export default class App extends Component {
             ? 'visible'
             : 'hidden'
         }"
-       >
-        <line
-          x1="${leftTopX}"
-          y1="${leftTopY}"
-          x2="${rightX}"
-          y2="${rightY}"
+      >
+        <polygon
+          points="
+            ${leftTopX},${leftTopY}
+            ${leftBottomX},${leftBottomY}
+            ${rightX},${rightY}
+          "
         />
-        <line
-          x1="${leftBottomX}"
-          y1="${leftBottomY}"
-          x2="${rightX}"
-          y2="${rightY}"
-         />
       </svg>
     </main>`;
   }

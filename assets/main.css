@@ -26,6 +26,13 @@
   stroke-width: 1px;
 }
 
+.svg-canvas polygon {
+  stroke: #bbb;
+  stroke-width: 1px;
+  fill: #bbb;
+  opacity: .15;
+}
+
 html, body, .root, main {
   height: 100%;
 }
