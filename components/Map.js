@@ -49,11 +49,20 @@ const lineStyles = [
 ];
 
 class Marker extends Component {
+  componentWillUpdate(nextProps) {
+    if (nextProps.style.icon !== this.props.style.icon) {
+      this.lElement.setIcon(nextProps.style.icon);
+    }
+  }
   componentDidMount() {
-    const { map, position, style, onClick, path } = this.props
+    const { map, position, style, onClick, path, className } = this.props
 
     this.lElement = L.marker(position, style);
     this.lElement.addTo(map);
+
+    if (className) {
+      this.lElement._icon.classList.add(className);
+    }
 
     if (onClick) {
       this.lElement.on('click', () => onClick(path));
@@ -65,7 +74,7 @@ class Marker extends Component {
   }
 }
 
-let MarkerIcon;
+let MarkerIcon, MarkerIconCurrent;
 
 export default class Map extends Component {
   constructor() {
@@ -84,6 +93,15 @@ export default class Map extends Component {
     );
   }
 
+  componentWillUpdate(nextProps) {
+    if (this.props.currentImage && nextProps.currentImage !== this.props.currentImage) {
+      this.map.panTo(this.props.markers[nextProps.currentImage], {
+        duration: 1,
+        easeLinearity: .5
+      });
+    }
+  }
+
   storeMarkerRef(marker) {
     this.markerRefs.push(marker);
 
@@ -94,9 +112,15 @@ export default class Map extends Component {
 
   componentDidMount() {
     MarkerIcon = L.divIcon({
-      html: '<img src="/picture.svg" />​',
+      html: '<img src="/picture.svg" />',
       className: 'leaflet-marker',
       iconSize: [12, 12],
+    });
+
+    MarkerIconCurrent = L.divIcon({
+      html: '<img src="/picture.svg" />',
+      className: 'leaflet-marker leaflet-marker-current',
+      iconSize: [15, 15],
     });
 
     this.setupMap();
@@ -153,7 +177,7 @@ export default class Map extends Component {
   }
 
   render() {
-    const {lines, markers, onCollectionClick} = this.props;
+    const {lines, markers, onCollectionClick, currentImage} = this.props;
 
     return html`<div id="map" ref=${this.ref}>
       ${this.map && Object.keys(lines).map(path => lineStyles.map(style => html`<${Polyline}
@@ -166,10 +190,11 @@ export default class Map extends Component {
       />`))}
       ${this.map && Object.keys(markers).map(imagePath => html`<${Marker}
         position=${markers[imagePath]}
+        className=${imagePath === currentImage ? 'current' : ''}
         ref=${this.storeMarkerRef}
         map=${this.map}
         style=${{
-          icon: MarkerIcon,
+          icon: imagePath === currentImage ? MarkerIconCurrent : MarkerIcon,
         }}
       />`)}
     </div>`;

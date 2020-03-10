@@ -27,9 +27,9 @@
 }
 
 .svg-canvas polygon {
-  stroke: #bbb;
+  stroke: #ccc;
   stroke-width: 1px;
-  fill: #bbb;
+  fill: #ccc;
   opacity: .15;
 }
 
@@ -121,4 +121,10 @@ a:visited {
   top: -26px;
   transform: rotate(14deg);
   right: -5px;
+  filter: grayscale(1) opacity(.5);
+}
+.leaflet-marker-current > img {
+  top: -32px;
+  right: -6px;
+  filter: grayscale(0) opacity(.85);
 }

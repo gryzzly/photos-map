@@ -11,8 +11,6 @@ function isInViewport (bounding, scrollTop) {
   );
 }
 
-const TRIANGLE_PADDING = 3;
-
 export default class App extends Component {
   constructor({images, gpx, url}) {
     super();
@@ -30,6 +28,8 @@ export default class App extends Component {
       rightY: 0,
       currentImage: '',
       markerPositions: {},
+      markers: {},
+      lines: {},
     };
 
     [
@@ -83,6 +83,7 @@ export default class App extends Component {
 
   updateScrollOffset(scrollTop) {
     let itemInViewport;
+
     Object.keys(this.imagePositions).some(element => {
       const inViewport = isInViewport(
         this.imagePositions[element],
@@ -96,7 +97,7 @@ export default class App extends Component {
 
     this.setState({
       scrollOffset: scrollTop,
-      currentImage: itemInViewport
+      currentImage: itemInViewport,
     }, () => this.setState(
       this.getTriangleCoordinates()
     ));
@@ -119,11 +120,11 @@ export default class App extends Component {
 
     return {
       leftTopX: image.right,
-      leftTopY: image.top - scrollOffset + TRIANGLE_PADDING,
+      leftTopY: image.top - scrollOffset,
       leftBottomX: image.right,
-      leftBottomY: image.bottom - scrollOffset - TRIANGLE_PADDING,
+      leftBottomY: image.bottom - scrollOffset,
       rightX: marker.x,
-      rightY: marker.y
+      rightY: marker.y,
     };
   }
 
@@ -146,6 +147,7 @@ export default class App extends Component {
         markers=${markers}
         onMount=${this.setMarkerPositions}
         onCollectionClick=${this.onMapCollectionClick}
+        currentImage=${currentImage}
       />
       <${Contents} 
         ...${props} 
