@@ -11,6 +11,8 @@ export default class App extends Component {
   constructor() {
     super();
     this.ref = createRef();
+    this.images = {};
+    this.createImageRef = this.createImageRef.bind(this);
   }
 
   componentDidMount() {
@@ -19,6 +21,17 @@ export default class App extends Component {
       this.props.onScroll(this.ref.current.scrollTop);
     }, true));
   }
+
+  componentWillUpdate(nextProps) {
+    if (nextProps.selected !== this.props.selected) {
+      this.images[nextProps.selected].ref.current.scrollIntoView();
+    }
+  }
+
+  createImageRef (img) {
+    this.images[img.props.img.fileName] = img;
+  }
+
   render(props) {
     const list = props.list || [];
     const contents = props.contents || '';
@@ -42,7 +55,11 @@ export default class App extends Component {
       ${images[name] &&
         html`<ul class="contents__images_list">
             ${images[name].map(
-          img => html`<${ContentPhoto} img=${img} onMount=${onMount} />`
+          img => html`<${ContentPhoto}
+            img=${img}
+            onMount=${onMount}
+            ref=${this.createImageRef}
+          />`
         )}
         </ul>`
       }

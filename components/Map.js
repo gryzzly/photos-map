@@ -30,12 +30,12 @@ class Polyline extends Component {
 }
 
 const lineStyles = [
-  {
-    weight: 10,
-    lineCap: 'square',
-    color: '#fff',
-    filter: 'url(#blur)'
-  },
+  // {
+  //   weight: 10,
+  //   lineCap: 'square',
+  //   color: '#fff',
+  //   filter: 'url(#blur)'
+  // },
   {
     weight: 6,
     lineCap: 'square',
@@ -96,7 +96,7 @@ export default class Map extends Component {
   componentWillUpdate(nextProps) {
     if (this.props.currentImage && nextProps.currentImage !== this.props.currentImage) {
       this.map.panTo(this.props.markers[nextProps.currentImage], {
-        duration: 1,
+        duration: .5,
         easeLinearity: .5
       });
     }
@@ -153,6 +153,8 @@ export default class Map extends Component {
         return result;
       }, [])
     );
+
+    this.mapOffset = this.map.getContainer().getBoundingClientRect();
   }
 
   componentWillUnmount() {
@@ -160,24 +162,29 @@ export default class Map extends Component {
     window.removeEventListener('resize', this.debouncedUpdate);
   }
 
-  updateMarkerPositions() {
+  updateMarkerPositions(e) {
     let markerOffsets = {};
     let { markers } = this.props;
-    let mapOffset = this.map.getContainer().getBoundingClientRect();
+
+    if (e && e.type === 'resize') {
+      console.log('recalcing client rect');
+      this.mapOffset = this.map.getContainer().getBoundingClientRect();
+    }
+
     Object.keys(markers).forEach(marker => {
       const offset =
         this.map.latLngToContainerPoint([
           markers[marker].lat,
           markers[marker].lng
         ]);
-      markerOffsets[marker] = offset.add([mapOffset.x, mapOffset.y]);
+      markerOffsets[marker] = offset.add([this.mapOffset.x, this.mapOffset.y]);
     });
 
     this.props.onMount(markerOffsets);
   }
 
   render() {
-    const {lines, markers, onCollectionClick, currentImage} = this.props;
+    const {lines, markers, onCollectionClick, onMarkerClick, currentImage} = this.props;
 
     return html`<div id="map" ref=${this.ref}>
       ${this.map && Object.keys(lines).map(path => lineStyles.map(style => html`<${Polyline}
@@ -196,6 +203,8 @@ export default class Map extends Component {
         style=${{
           icon: imagePath === currentImage ? MarkerIconCurrent : MarkerIcon,
         }}
+        path=${imagePath}
+        onClick=${this.props.onMarkerClick}
       />`)}
     </div>`;
   }

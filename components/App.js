@@ -36,7 +36,8 @@ export default class App extends Component {
       'onMapCollectionClick',
       'setImagePositions',
       'setMarkerPositions',
-      'updateScrollOffset'
+      'updateScrollOffset',
+      'onMarkerClick',
     ].forEach(function(fn) {
       this[fn] = this[fn].bind(this);
     }, this);
@@ -60,10 +61,20 @@ export default class App extends Component {
     this.state.markers = (url === '/' || url === '/index.html')
       ? {}
       : derivedCoordinates.markers;
+
   }
 
   onMapCollectionClick(collection) {
-    window.location = `/${collection}/index.html`
+    const {url} = this.props;
+    if (url === '/' || url === '/index.html') {
+      window.location = `/${collection}/index.html`
+    }
+  }
+
+  onMarkerClick(path) {
+    this.setState({
+      selected: path
+    });
   }
 
   setImagePositions(path, rect) {
@@ -148,11 +159,13 @@ export default class App extends Component {
         onMount=${this.setMarkerPositions}
         onCollectionClick=${this.onMapCollectionClick}
         currentImage=${currentImage}
+        onMarkerClick=${this.onMarkerClick}
       />
-      <${Contents} 
-        ...${props} 
+      <${Contents}
+        ...${props}
         onMount=${this.setImagePositions}
         onScroll=${this.updateScrollOffset}
+        selected=${this.state.selected}
       />
       <svg
         class="svg-canvas"
