@@ -22,6 +22,13 @@ module.exports = function (options) {
       collectionPages: {},
     };
 
+    // FIXME: do not attempt to recreate content files with data
+    //  when folders of content aren’t processed (hot-reloading case)
+    if (Object.keys(files).length < 2) {
+      done();
+      return;
+    }
+
     const imagesWithLocation = Object.keys(files)
       .filter(fileName => {
         return files[fileName].exif &&

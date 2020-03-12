@@ -17,6 +17,10 @@ module.exports = function(options) {
   });
 
   return function(files, metalsmith, done) {
+    if (!Object.keys(files).some(file => matcher.match(file))) {
+      return done();
+    }
+
     const ep = new exiftool.ExiftoolProcess(exiftoolBin);
 
     return ep

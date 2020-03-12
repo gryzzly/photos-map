@@ -6,15 +6,15 @@ import photoLocations from './photo-locations';
 import htm from './metalsmith-htm';
 import title from 'metalsmith-title';
 import sharp from 'metalsmith-sharp';
+import watch from 'metalsmith-watch';
+import serve from 'metalsmith-serve';
 
 import { h } from 'preact';
 import renderToString from 'preact-render-to-string';
 import App from './components/App';
 import document from './document';
 
-function build (done) {
-  // __dirname defined by node.js
-  Metalsmith(__dirname)
+const metalsmith = Metalsmith(__dirname)
   .source('./content')      // source directory
   .destination('./public')   // destination directory
   .clean(true)        // clean destination before
@@ -61,21 +61,29 @@ function build (done) {
     source: './web_modules',
     // relative to the build directory
     destination: './web_modules'
-  }))
-  .build(function(err) {
-    if (err) {
-      console.log('Error building:' + err);
-      throw new Error(err);
-    }
-    console.log('Built successfully.')
-    if (done) {
-      done();
-    }
-  });
-};
+  }));
 
-module.exports = build;
+  if (process.argv[2] === 'dev') {
+    metalsmith
+    .use(watch({
+      paths: {
+        // updating image collections requires full rebuild
+        '${source}/**/*': '**/*',
+        // JS can be rebuilt one-by-one
+        'components/**/*': true,
+        'assets/**/*': true,
+      }
+    }, true))
+    .use(serve({
+      port: 8888
+    }));
+  }
 
-if (process.argv[2] === "run") {
-  build();
-}
+  metalsmith
+    .build(function(err) {
+      if (err) {
+        console.log('Error building:' + err);
+        throw new Error(err);
+      }
+      console.log('Built successfully.')
+    });
