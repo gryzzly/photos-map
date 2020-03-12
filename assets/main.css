@@ -29,8 +29,14 @@
 .svg-canvas polygon {
   stroke: #ccc;
   stroke-width: 1px;
-  fill: #ccc;
   opacity: .15;
+}
+
+#fadein .stop1 {
+  stop-color: #fff;
+}
+#fadein .stop2 {
+  stop-color: #999;
 }
 
 html, body, .root, main {
@@ -59,10 +65,15 @@ a:visited {
 
 .contents {
   flex: 1;
-  padding: 10px;
+  padding: 20px;
+  margin: -10px;
   overflow: scroll;
+  direction: rtl;
 }
 
+.contents > * {
+  direction: ltr;
+}
 .contents ul {
   list-style: none;
 }
@@ -94,6 +105,13 @@ a:visited {
   margin-bottom: 3em;
   /*position: relative;*/
 }
+
+.contents__images_list .imageWrapper {
+  background: #ccc;
+  margin: 0 auto;
+  max-width: 30vw;
+}
+
 .contents__images_list img {
   display: block;
   width: 100%;

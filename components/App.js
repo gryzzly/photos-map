@@ -175,13 +175,14 @@ export default class App extends Component {
             : 'hidden'
         }"
       >
-        <polygon
-          points="
-            ${leftTopX},${leftTopY}
-            ${leftBottomX},${leftBottomY}
-            ${rightX},${rightY}
-          "
-        />
+      <polygon
+        points="
+          ${leftTopX},${leftTopY}
+          ${leftBottomX},${leftBottomY}
+          ${rightX},${rightY}
+        "
+        fill="url(#fadein)"
+      />
       </svg>
     </main>`;
   }

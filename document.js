@@ -15,7 +15,7 @@ export default function(file, body) {
   <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
   </head>
   <body>
-  
+
   <style>
     .svg-defs {
       display: block;
@@ -38,8 +38,12 @@ export default function(file, body) {
         />
       </filter>
     </defs>
-  </svg>
-  
+
+    <linearGradient id="fadein">
+      <stop class="stop1" offset="15%"/>
+      <stop class="stop2" offset="100%"/>
+    </svg>
+
   <div class="root">
   ${body}
   </div><!-- root -->
