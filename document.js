@@ -56,9 +56,17 @@ export default function(file, body) {
     window.state = ${JSON.stringify(file, null, 2)};
   </script>
   <script type="module" src="/script.js"></script>
-  <script>var privalytics_id="PL-74ADBE";</script>
-  <script async src="https://cdn.privalytics.io/privalytics.js"></script>
 
+  <script>
+  if (window.location.hash === '#skipgc') {
+    localStorage.setItem('skipgc', 't');
+  }
+  if (localStorage.getItem('skipgc') === 't') {
+    window.goatcounter = {
+      no_onload: true
+    };
+  }
+  </script>
   <script
     data-goatcounter="https://freetimemanagers.goatcounter.com/count"
     async
