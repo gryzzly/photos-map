@@ -98,7 +98,7 @@ export default class App extends Component {
     Object.keys(this.imagePositions).some(element => {
       const inViewport = isInViewport(
         this.imagePositions[element],
-        scrollTop
+        scrollTop - this.imagePositions[element].height / 3
       );
       if (inViewport) {
         itemInViewport = element;
