@@ -47,7 +47,7 @@ main {
   display: flex;
   flex-direction: row-reverse;
   padding: 10px;
-  font-family: 'IBM Plex Mono', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 16px;
   line-height: 24px;
 }
@@ -64,12 +64,18 @@ a:visited {
 }
 
 .contents {
-  flex: 1;
+  flex: 1.2;
   padding: 20px;
   margin: -10px;
   overflow: scroll;
   direction: rtl;
 }
+@media (max-width: 640px) {
+  .contents {
+    flex: 2;
+  }
+}
+
 
 .contents > * {
   direction: ltr;
@@ -103,19 +109,33 @@ a:visited {
 }
 .contents__images_list li {
   margin-bottom: 3em;
-  /*position: relative;*/
+}
+@media (max-width: 640px) {
+  .contents__images_list li {
+    margin-bottom: 1em;
+  }
+}
+
+:root {
+  --image-width: 32vw;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --image-width: 100%;
+  }
 }
 
 .contents__images_list .imageWrapper {
   background: #ccc;
   margin: 0 auto;
-  max-width: 30vw;
+  max-width: var(--image-width);
 }
 
 .contents__images_list img {
   display: block;
   width: 100%;
-  max-width: 30vw;
+  max-width: var(--image-width);
   height: auto;
   margin: 0 auto;
   opacity: 0;
@@ -126,8 +146,9 @@ a:visited {
 .contents__images_list .imageWrapper {
   background: #ccc;
   margin: 0 auto;
-  max-width: 30vw;
+  max-width: var(--image-width);
 }
+
 
 .contents__images_list img.loaded {
   opacity: 1;
