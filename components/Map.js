@@ -167,7 +167,6 @@ export default class Map extends Component {
     let { markers } = this.props;
 
     if (e && e.type === 'resize') {
-      console.log('recalcing client rect');
       this.mapOffset = this.map.getContainer().getBoundingClientRect();
     }
 
@@ -177,7 +176,10 @@ export default class Map extends Component {
           markers[marker].lat,
           markers[marker].lng
         ]);
-      markerOffsets[marker] = offset.add([this.mapOffset.x, this.mapOffset.y]);
+      markerOffsets[marker] = {
+        x: offset.x + this.mapOffset.left,
+        y: offset.y + this.mapOffset.top,
+      };
     });
 
     this.props.onMount(markerOffsets);
