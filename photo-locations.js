@@ -146,7 +146,7 @@ module.exports = function (options) {
         ? files['index.html'].contents.toString()
         : '',
       images: imagesByCollection,
-      list: collections
+      list: collections.reverse()
     };
     done();
   }
