@@ -55,7 +55,7 @@ export default class ImagesViewer extends Component {
     >
 
       <button
-        class="image-gallery-prev"
+        class="image-gallery-control image-gallery-prev"
         onClick=${this.onPrevClick}
         title="Previous"
       >◀</button>
@@ -64,12 +64,12 @@ export default class ImagesViewer extends Component {
 
       <button
         onClick=${this.onNextClick}
-        class="image-gallery-next"
+        class="image-gallery-control image-gallery-next"
         title="Next"
       >▶</button>
 
       <button
-        class="image-gallery-close"
+        class="image-gallery-control image-gallery-close"
         onClick=${onClose}
         title="Close"
       >✕</button>

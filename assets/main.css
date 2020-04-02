@@ -88,17 +88,24 @@ a:visited {
   }
 }
 
-.image-gallery-next,
-.image-gallery-prev {
+.image-gallery-control {
   position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #fff;
-  width: 16%;
-  height: 100vh;
   background: none;
   border: 0;
+  z-index: 1;
   cursor: pointer;
+  color: #ccc;
+}
+.image-gallery-control:hover {
+  color: #fff;
+}
+
+.image-gallery-next,
+.image-gallery-prev {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16%;
+  height: 100vh;
 }
 
 .image-gallery-prev {
@@ -109,16 +116,11 @@ a:visited {
 }
 
 .image-gallery-close {
-  background: none;
-  border: 0;
-  position: fixed;
   top: 0;
   right: 0;
-  color: #fff;
   font-size: 20px;
   font-weight: bold;
   padding: 3%;
-  cursor: pointer;
 }
 
 #map {
