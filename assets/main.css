@@ -51,11 +51,74 @@ main {
   padding: 10px;
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 1.25;
 }
 
 a:visited {
   color: initial;
+}
+
+.image-gallery {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, .8);
+  z-index: 99999;
+  display: none;
+}
+.image-gallery.image-gallery-open {
+  display: block;
+}
+
+.image-gallery img {
+  max-width: 95%;
+  max-height: 95vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media screen and (min-width: 1650px) {
+  .image-gallery img {
+    max-width: 85%;
+    max-height: 85vh;
+  }
+}
+
+.image-gallery-next,
+.image-gallery-prev {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  width: 16%;
+  height: 100vh;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.image-gallery-prev {
+  left: 0;
+}
+.image-gallery-next {
+  right: 0;
+}
+
+.image-gallery-close {
+  background: none;
+  border: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 3%;
+  cursor: pointer;
 }
 
 #map {

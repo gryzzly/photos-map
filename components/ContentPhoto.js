@@ -11,8 +11,7 @@ const placeholderSrc = (width, height) => `data:image/svg+xml,` +
   />`);
 
 const OBSERVER_OPTIONS = {
-  root: null, // relative to document viewport
-  rootMargin: '100px', // margin around root. Values are similar to css
+  rootMargin: '300px 0px', // margin around root. Values are similar to css
   // property. Unitless values not allowed
   threshold: .01 // visible amount of item shown in relation to root
 };
@@ -22,13 +21,23 @@ export default class ContentPhoto extends Component {
     super();
     this.observer = null;
     this.ref = createRef();
-    ['onImagePositionsUpdate', 'onImageLoaded', 'onObserverChange']
+    [
+      'onImagePositionsUpdate',
+      'onImageLoaded',
+      'onObserverChange',
+      'onClick',
+    ]
       .forEach(fn => {
         this[fn] = this[fn].bind(this);
       });
     this.debouncedUpdate = rafDebounce(
       this.onImagePositionsUpdate,
       true
+    );
+
+    this.deboundcedObserverChange = rafDebounce(
+      this.onObserverChange,
+      true,
     );
   }
 
@@ -60,6 +69,13 @@ export default class ContentPhoto extends Component {
     });
   }
 
+  onClick(e) {
+    // don’t bring the event down to the link
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.onClick(this.props.img.fileName);
+  }
+
   componentDidMount() {
     const imageElement = this.ref.current;
     this.onImagePositionsUpdate();
@@ -67,8 +83,11 @@ export default class ContentPhoto extends Component {
     window.addEventListener('resize', this.debouncedUpdate);
 
     this.observer = new IntersectionObserver(
-      this.onObserverChange,
-      OBSERVER_OPTIONS
+      this.deboundcedObserverChange,
+      Object.assign(
+        { root: this.props.scrollingElement.current },
+        OBSERVER_OPTIONS
+      ),
     );
 
     this.observer.observe(imageElement);
@@ -81,8 +100,8 @@ export default class ContentPhoto extends Component {
     window.removeEventListener('resize', this.debouncedUpdate);
   }
 
-  render({img}) {
-    return html`<li>
+  render({img, onClick}) {
+    return html`<li onClickCapture=${this.onClick}>
       <a href="${img.fileName}">
         <div class="imageWrapper">
           <img

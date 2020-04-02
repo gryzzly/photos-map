@@ -7,7 +7,7 @@ import ContentPhoto from "./ContentPhoto.js";
 
 import {rafDebounce} from "./util.js";
 
-export default class App extends Component {
+export default class Contents extends Component {
   constructor() {
     super();
     this.ref = createRef();
@@ -38,6 +38,7 @@ export default class App extends Component {
     const images = props.images || {};
     const name = props.name || '';
     const onMount = props.onMount;
+    const onGalleryOpen = props.onGalleryOpen;
 
     return html`<div class="contents" ref=${this.ref}>
       <h1 class="contents__title">
@@ -59,6 +60,8 @@ export default class App extends Component {
             img=${img}
             onMount=${onMount}
             ref=${this.createImageRef}
+            onClick=${onGalleryOpen}
+            scrollingElement=${this.ref}
           />`
         )}
         </ul>`

@@ -4,11 +4,23 @@ const html = htm.bind(h);
 
 import Map from './Map.js';
 import Contents from "./Contents.js";
+import ImagesViewer from './ImagesViewer.js'
 
 function isInViewport (bounding, scrollTop) {
   return (
     bounding.top - scrollTop >= 0
   );
+}
+
+function getCurrentIndex(images, name) {
+  let currentIndex = 0;
+  images.some((img, index) => {
+    if (img.fileName === name) {
+      currentIndex = index;
+      return true;
+    }
+  });
+  return currentIndex;
 }
 
 export default class App extends Component {
@@ -30,6 +42,7 @@ export default class App extends Component {
       markerPositions: {},
       markers: {},
       lines: {},
+      isGalleryOpen: false,
     };
 
     [
@@ -38,6 +51,10 @@ export default class App extends Component {
       'setMarkerPositions',
       'updateScrollOffset',
       'onMarkerClick',
+      'onGalleryOpen',
+      'onGalleryClose',
+      'onGalleryAdvance',
+      'onGalleryBack',
     ].forEach(function(fn) {
       this[fn] = this[fn].bind(this);
     }, this);
@@ -139,6 +156,45 @@ export default class App extends Component {
     };
   }
 
+  onGalleryOpen(path) {
+    this.setState({
+      isGalleryOpen: true,
+      selected: path,
+    });
+  }
+
+  onGalleryClose() {
+    this.setState({
+      isGalleryOpen: false,
+    });
+  }
+
+  onGalleryBack() {
+    const {images, name} = this.props;
+    const {selected} = this.state;
+    const currentIndex = getCurrentIndex(images[name], selected);
+    let nextIndex = currentIndex - 1;
+    if (nextIndex === -1) {
+      nextIndex = images[name].length - 1;
+    }
+    this.setState({
+      selected: images[name][nextIndex].fileName,
+    });
+  }
+
+  onGalleryAdvance() {
+    const {images, name} = this.props;
+    const {selected} = this.state;
+    const currentIndex = getCurrentIndex(images[name], selected);
+    let nextIndex = currentIndex + 1;
+    if (nextIndex === images[name].length) {
+      nextIndex = 0;
+    }
+    this.setState({
+      selected: images[name][nextIndex].fileName
+    });
+  }
+
   render(props, state) {
     const {
       leftTopX,
@@ -150,7 +206,14 @@ export default class App extends Component {
       currentImage,
       lines,
       markers,
+      selected,
+      isGalleryOpen,
     } = state;
+
+    const {
+      images,
+      name
+    } = props;
 
     return html`<main>
       <${Map}
@@ -165,7 +228,16 @@ export default class App extends Component {
         ...${props}
         onMount=${this.setImagePositions}
         onScroll=${this.updateScrollOffset}
-        selected=${this.state.selected}
+        selected=${selected}
+        onGalleryOpen=${this.onGalleryOpen}
+      />
+      <${ImagesViewer}
+        selectedImage=${selected}
+        images=${images[name]}
+        isOpen=${isGalleryOpen}
+        onClose=${this.onGalleryClose}
+        onNext=${this.onGalleryAdvance}
+        onPrev=${this.onGalleryBack}
       />
       <svg
         class="svg-canvas"
