@@ -65,6 +65,8 @@ export default class ContentPhoto extends Component {
           'srcset',
           imageElement.getAttribute('data-srcset')
         );
+        this.observer.disconnect();
+        this.observer = null;
       }
     });
   }
@@ -94,8 +96,11 @@ export default class ContentPhoto extends Component {
   }
 
   componentWillUnmount() {
-    this.observer.disconnect();
-    this.observer = null;
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+
     this.ref.current.removeEventListener('load', this.onImageLoaded);
     window.removeEventListener('resize', this.debouncedUpdate);
   }
