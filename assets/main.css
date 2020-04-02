@@ -167,7 +167,9 @@ a:visited {
   display: block;
   color: inherit;
   line-height: 2;
-
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .contents__images_list {
   margin: 3em 0;

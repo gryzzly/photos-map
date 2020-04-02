@@ -4,6 +4,6 @@ const html = htm.bind(h);
 
 export default function LinkToItem({name, title}) {
   return html`<li>
-    <a href="/${name}/index.html">${title ? `${title} – ${name}` : name}</a>
+    <a href="/${name}/index.html">${title ? `${name} – ${title}` : name}</a>
   </li>`;
 }
