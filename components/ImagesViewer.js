@@ -2,6 +2,26 @@ import htm from '../web_modules/htm.js';
 import { h, Component, createRef } from '../web_modules/preact.js';
 const html = htm.bind(h);
 
+class Image extends Component {
+  render() {
+    const {src, lqipSrc} = this.props;
+    return html`<div>
+      <img src=${lqipSrc} />
+      <picture>
+        <source
+          type="image/webp"
+          srcset=${src}
+        />
+        <source
+          srcset=${src.replace('webp', 'jpg')}
+        />
+        <img
+          src=${src.replace('webp', 'jpg')}
+        />
+      </picture>
+    </div>`
+  }
+}
 
 export default class ImagesViewer extends Component {
   constructor() {
@@ -60,7 +80,10 @@ export default class ImagesViewer extends Component {
         title="Previous"
       >◀</button>
 
-      ${selectedImage && html`<img src=${selectedImage} />`}
+      ${selectedImage && html`<${Image}
+        src=${selectedImage.replace('jpg', 'webp')}
+        lqipSrc=${`/thumbs${selectedImage}`}
+      />`}
 
       <button
         onClick=${this.onNextClick}

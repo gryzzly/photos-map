@@ -26,8 +26,26 @@ const metalsmith = Metalsmith(__dirname)
   .use(title())
   .use(photoLocations())
   .use(sharp([
+    // generate thumbnails
     {
       namingPattern: 'thumbs/{dir}/{name}{ext}',
+      methods: [{
+        name: 'resize',
+        args: (metadata) => [
+          Math.round(metadata.width * 0.5),
+          Math.round(metadata.height * 0.5),
+        ],
+      }, {
+        name: 'jpeg',
+        args: {
+          progressive: true,
+          quality: 61,
+        }
+      }],
+    },
+
+    {
+      namingPattern: 'thumbs/{dir}/{name}.webp',
       methods: [
         {
           name: 'resize',
@@ -35,9 +53,41 @@ const metalsmith = Metalsmith(__dirname)
             Math.round(metadata.width * 0.5),
             Math.round(metadata.height * 0.5),
           ],
+        },
+        {
+          name: 'toFormat',
+          args: ['webp', {
+            force: true,
+            quality: 61,
+          }]
         }
       ],
-    }
+    },
+
+    // optimize full size images:
+    // make jpegs progressive and create webp
+    {
+      namingPattern: '{dir}/{name}.jpeg',
+      methods: [{
+        name: 'jpeg',
+        args: {
+          progressive: true,
+          quality: 81,
+        }
+      }]
+    },
+
+    {
+      namingPattern: '{dir}/{name}.webp',
+      methods: [{
+        name: 'webp',
+        args: {
+          force: true,
+          quality: 61,
+        }
+      }]
+    },
+
   ]))
   // render component tree with file data
   .use(htm({
