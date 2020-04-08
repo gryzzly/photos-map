@@ -3,11 +3,30 @@ import { h, Component, createRef } from '../web_modules/preact.js';
 const html = htm.bind(h);
 
 class Image extends Component {
+  constructor() {
+    super();
+    this.state = {
+      updated: false
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.src !== this.props.src) {
+      this.setState({
+        updated: true
+      });
+      setTimeout(() => this.setState({
+        updated: false
+      }));
+    }
+  }
+
   render() {
+    const {updated} = this.state;
     const {src, lqipSrc} = this.props;
     return html`<div>
-      <img src=${lqipSrc} />
-      <picture>
+      <img src=${updated ? '' : lqipSrc} />
+      ${updated ? null : html`<picture>
         <source
           type="image/webp"
           srcset=${src}
@@ -18,7 +37,7 @@ class Image extends Component {
         <img
           src=${src.replace('webp', 'jpg')}
         />
-      </picture>
+      </picture>`}
     </div>`
   }
 }
