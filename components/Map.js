@@ -55,7 +55,7 @@ class Marker extends Component {
     }
   }
   componentDidMount() {
-    const { map, position, style, onClick, path, className } = this.props
+    const { map, position, style, onClick, image, className } = this.props
 
     this.lElement = L.marker(position, style);
     this.lElement.addTo(map);
@@ -65,7 +65,7 @@ class Marker extends Component {
     }
 
     if (onClick) {
-      this.lElement.on('click', () => onClick(path));
+      this.lElement.on('click', () => onClick(image));
     }
   }
   componentWillUnmount() {
@@ -205,7 +205,7 @@ export default class Map extends Component {
         style=${{
           icon: imagePath === currentImage ? MarkerIconCurrent : MarkerIcon,
         }}
-        path=${imagePath}
+        image=${markers[imagePath]}
         onClick=${this.props.onMarkerClick}
       />`)}
     </div>`;

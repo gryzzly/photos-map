@@ -23,8 +23,11 @@ export default class Contents extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (nextProps.selected !== this.props.selected) {
-      this.images[nextProps.selected].ref.current.scrollIntoView();
+    if (
+      nextProps.selected && this.props.selected &&
+      nextProps.selected.fileName !== this.props.selected.fileName
+    ) {
+      this.images[nextProps.selected.fileName].ref.current.scrollIntoView();
     }
   }
 

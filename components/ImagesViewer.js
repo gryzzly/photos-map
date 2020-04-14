@@ -100,8 +100,8 @@ export default class ImagesViewer extends Component {
       >◀</button>
 
       ${selectedImage && html`<${Image}
-        src=${selectedImage.replace('jpg', 'webp')}
-        lqipSrc=${`/thumbs${selectedImage}`}
+        src=${selectedImage.fileName.replace('jpg', 'webp')}
+        lqipSrc=${`/thumbs${selectedImage.fileName}`}
       />`}
 
       <button

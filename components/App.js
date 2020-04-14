@@ -12,10 +12,10 @@ function isInViewport (bounding, scrollTop) {
   );
 }
 
-function getCurrentIndex(images, name) {
+function getCurrentIndex(images, currentImage) {
   let currentIndex = 0;
   images.some((img, index) => {
-    if (img.fileName === name) {
+    if (img.fileName === currentImage.fileName) {
       currentIndex = index;
       return true;
     }
@@ -88,9 +88,9 @@ export default class App extends Component {
     }
   }
 
-  onMarkerClick(path) {
+  onMarkerClick(image) {
     this.setState({
-      selected: path
+      selected: image
     });
   }
 
@@ -156,10 +156,10 @@ export default class App extends Component {
     };
   }
 
-  onGalleryOpen(path) {
+  onGalleryOpen(image) {
     this.setState({
       isGalleryOpen: true,
-      selected: path,
+      selected: image,
     });
   }
 
@@ -178,7 +178,7 @@ export default class App extends Component {
       nextIndex = images[name].length - 1;
     }
     this.setState({
-      selected: images[name][nextIndex].fileName,
+      selected: images[name][nextIndex],
     });
   }
 
@@ -191,7 +191,7 @@ export default class App extends Component {
       nextIndex = 0;
     }
     this.setState({
-      selected: images[name][nextIndex].fileName
+      selected: images[name][nextIndex],
     });
   }
 

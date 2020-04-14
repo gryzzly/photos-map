@@ -75,7 +75,7 @@ export default class ContentPhoto extends Component {
     // don’t bring the event down to the link
     e.preventDefault();
     e.stopPropagation();
-    this.props.onClick(this.props.img.fileName);
+    this.props.onClick(this.props.img);
   }
 
   componentDidMount() {
