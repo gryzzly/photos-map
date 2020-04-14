@@ -30,17 +30,18 @@ const metalsmith = Metalsmith(__dirname)
     {
       namingPattern: 'thumbs/{dir}/{name}{ext}',
       methods: [{
-        name: 'resize',
-        args: (metadata) => [
-          Math.round(metadata.width * 0.5),
-          Math.round(metadata.height * 0.5),
-        ],
-      }, {
         name: 'jpeg',
         args: {
           progressive: true,
           quality: 61,
         }
+      },
+      {
+        name: 'resize',
+        args: (metadata) => [
+          Math.round(metadata.width * 0.5),
+          Math.round(metadata.height * 0.5),
+        ],
       }],
     },
 
@@ -67,7 +68,7 @@ const metalsmith = Metalsmith(__dirname)
     // optimize full size images:
     // make jpegs progressive and create webp
     {
-      namingPattern: '{dir}/{name}.jpeg',
+      namingPattern: '{dir}/{name}.jpg',
       methods: [{
         name: 'jpeg',
         args: {
