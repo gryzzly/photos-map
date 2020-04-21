@@ -14,82 +14,36 @@ import renderToString from 'preact-render-to-string';
 import App from './components/App';
 import document from './document';
 
-const metalsmith = Metalsmith(__dirname)
+const site = Metalsmith(__dirname)
   .source('./content')      // source directory
   .destination('./public')   // destination directory
-  .clean(true)        // clean destination before
-  // processing content files
+  .clean(false)
+;
+
+if (process.argv[2] === 'dev') {
+  site
+    .use(watch({
+      paths: {
+        // updating image collections requires full rebuild
+        '${source}/**/*': '**/*',
+        // JS can be rebuilt one-by-one
+        'components/**/*': true,
+        'assets/**/*': true,
+      }
+    }, true))
+    .use(serve({
+      port: 8888
+    }));
+}
+
+// processing content files
+site
   .use(mediaMetadata({
     path: '**/*.+(jpg|jpeg)',
   }))
   .use(markdown())
   .use(title())
   .use(photoLocations())
-  .use(sharp([
-    // generate thumbnails
-    {
-      namingPattern: 'thumbs/{dir}/{name}{ext}',
-      methods: [{
-        name: 'jpeg',
-        args: {
-          progressive: true,
-          quality: 61,
-        }
-      },
-      {
-        name: 'resize',
-        args: (metadata) => [
-          Math.round(metadata.width * 0.5),
-          Math.round(metadata.height * 0.5),
-        ],
-      }],
-    },
-
-    {
-      namingPattern: 'thumbs/{dir}/{name}.webp',
-      methods: [
-        {
-          name: 'resize',
-          args: (metadata) => [
-            Math.round(metadata.width * 0.5),
-            Math.round(metadata.height * 0.5),
-          ],
-        },
-        {
-          name: 'toFormat',
-          args: ['webp', {
-            force: true,
-            quality: 61,
-          }]
-        }
-      ],
-    },
-
-    // optimize full size images:
-    // make jpegs progressive and create webp
-    {
-      namingPattern: '{dir}/{name}.jpg',
-      methods: [{
-        name: 'jpeg',
-        args: {
-          progressive: true,
-          quality: 81,
-        }
-      }]
-    },
-
-    {
-      namingPattern: '{dir}/{name}.webp',
-      methods: [{
-        name: 'webp',
-        args: {
-          force: true,
-          quality: 61,
-        }
-      }]
-    },
-
-  ]))
   // render component tree with file data
   .use(htm({
     document
@@ -114,23 +68,72 @@ const metalsmith = Metalsmith(__dirname)
     destination: './web_modules'
   }));
 
-  if (process.argv[2] === 'dev') {
-    metalsmith
-    .use(watch({
-      paths: {
-        // updating image collections requires full rebuild
-        '${source}/**/*': '**/*',
-        // JS can be rebuilt one-by-one
-        'components/**/*': true,
-        'assets/**/*': true,
-      }
-    }, true))
-    .use(serve({
-      port: 8888
-    }));
-  }
+  site
+    .use(sharp([
+      // generate thumbnails
+      {
+        namingPattern: 'thumbs/{dir}/{name}.jpg',
+        methods: [{
+          name: 'resize',
+          args: (metadata) => [
+            Math.round(metadata.width * 0.5),
+            Math.round(metadata.height * 0.5),
+          ],
+        }, {
+          name: 'jpeg',
+          args: {
+            progressive: true,
+            quality: 61,
+          }
+        }],
+      },
 
-  metalsmith
+      {
+        namingPattern: 'thumbs/{dir}/{name}.webp',
+        methods: [
+          {
+            name: 'resize',
+            args: (metadata) => [
+              Math.round(metadata.width * 0.5),
+              Math.round(metadata.height * 0.5),
+            ],
+          },
+          {
+            name: 'toFormat',
+            args: ['webp', {
+              force: true,
+              quality: 61,
+            }]
+          }
+        ],
+      },
+
+      // optimize full size images:
+      // make jpegs progressive and create webp
+      {
+        namingPattern: '{dir}/{name}.jpg',
+        methods: [{
+          name: 'jpeg',
+          args: {
+            progressive: true,
+            quality: 81,
+          }
+        }]
+      },
+
+      {
+        namingPattern: '{dir}/{name}.webp',
+        methods: [{
+          name: 'webp',
+          args: {
+            force: true,
+            quality: 61,
+          }
+        }]
+      },
+    ]));
+
+  site
     .build(function(err) {
       if (err) {
         console.log('Error building:' + err);

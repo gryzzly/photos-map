@@ -60,24 +60,6 @@ module.exports = function (options) {
         return result;
       }, {});
 
-    if (options.processImages) {
-      await Promise.all(imagesWithLocation.map(async (fileName) => {
-        const imageFile = files[fileName];
-
-        await sharp(imageFile.contents)
-          .jpeg({
-            progressive: true
-          })
-          .toBuffer()
-          .then(data => {
-            updatedFiles.processedImages[fileName] = {
-              ...imageFile,
-              contents: data
-            };
-          });
-      }));
-    }
-
     const imageLocations =  imagesWithLocation.map(fileName => {
         const file = files[fileName];
         // add config for this option, to select if file is part of collection
