@@ -24,19 +24,23 @@ class Image extends Component {
   render() {
     const {updated} = this.state;
     const {src, lqipSrc} = this.props;
+    console.log(src);
     return html`<div>
-      <img src=${updated ? '' : lqipSrc} />
-      ${updated ? null : html`<picture>
+      ${updated
+        ? null
+        : html`<picture>
         <source
           type="image/webp"
-          srcset=${src}
+          srcset=${lqipSrc.replace('jpg', 'webp')}
         />
-        <source
-          srcset=${src.replace('webp', 'jpg')}
-        />
-        <img
-          src=${src.replace('webp', 'jpg')}
-        />
+        <source srcset=${lqipSrc} />
+        <img src=${lqipSrc} />
+      </picture>`
+      }
+      ${updated ? null : html`<picture>
+        <source type="image/webp" srcset=${src.replace('jpg', 'webp')} />
+        <source srcset=${src} />
+        <img src=${src} />
       </picture>`}
     </div>`
   }
@@ -100,8 +104,8 @@ export default class ImagesViewer extends Component {
       >◀</button>
 
       ${selectedImage && html`<${Image}
-        src=${selectedImage.fileName.replace('jpg', 'webp')}
-        lqipSrc=${`/thumbs${selectedImage.fileName}`}
+        src=${selectedImage.fileName}
+        lqipSrc=${selectedImage.thumbnail}
       />`}
 
       <button

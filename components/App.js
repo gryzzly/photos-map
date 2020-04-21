@@ -8,7 +8,8 @@ import ImagesViewer from './ImagesViewer.js'
 
 function isInViewport (bounding, scrollTop) {
   return (
-    bounding.top - scrollTop >= 0
+    bounding.top - scrollTop >= 0 &&
+    scrollTop >= bounding.top - window.innerHeight
   );
 }
 
@@ -146,7 +147,7 @@ export default class App extends Component {
     const image = this.imagePositions[currentImage];
     const marker = markerPositions[currentImage];
 
-    return {
+    const coords = {
       leftTopX: image.right,
       leftTopY: image.top - scrollOffset,
       leftBottomX: image.right,
@@ -154,6 +155,15 @@ export default class App extends Component {
       rightX: marker.x,
       rightY: marker.y,
     };
+
+    // if (
+    //     (coords.rightX - coords.leftTopX) < 0 ||
+    //     coords.leftTopY > (window.innerHeight - 40)
+    //   ) {
+    //   return false;
+    // }
+
+    return coords;
   }
 
   onGalleryOpen(image) {

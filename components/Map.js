@@ -95,7 +95,7 @@ export default class Map extends Component {
 
   componentWillUpdate(nextProps) {
     if (this.props.currentImage && nextProps.currentImage !== this.props.currentImage) {
-      this.map.setView(this.props.markers[nextProps.currentImage], 12,{
+      nextProps.currentImage && this.map.setView(this.props.markers[nextProps.currentImage], 12,{
         duration: .5,
         easeLinearity: .5
       });

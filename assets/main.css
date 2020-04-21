@@ -88,6 +88,8 @@ a:visited {
   .image-gallery img {
     max-width: 85%;
     max-height: 85vh;
+    width: 85%;
+    height: 85%;
   }
 }
 

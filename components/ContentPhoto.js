@@ -61,9 +61,16 @@ export default class ContentPhoto extends Component {
     const imageElement = this.ref.current;
     changes.forEach(change => {
       if (change.intersectionRatio > 0) {
+        const sources = imageElement.parentElement.querySelectorAll('source');
+        sources.forEach(source => {
+          source.setAttribute(
+            'srcset',
+            source.getAttribute('data-srcset')
+          );
+        });
         imageElement.setAttribute(
-          'srcset',
-          imageElement.getAttribute('data-srcset')
+          'src',
+          imageElement.getAttribute('data-src')
         );
         this.observer.disconnect();
         this.observer = null;
@@ -109,14 +116,20 @@ export default class ContentPhoto extends Component {
     return html`<li onClickCapture=${this.onClick}>
       <a href="${img.fileName}">
         <div class="imageWrapper">
-          <img
-            ref=${this.ref}
-            src="${placeholderSrc(img.width, img.height)}"
-            data-srcset="
-              ${img.thumbnail} 1500w,
-              ${img.fileName} 3000w
-            "
-          />
+          <picture>
+            <source
+              type="image/webp"
+              data-srcset="${img.thumbnail.replace('jpg', 'webp')}"
+            />
+            <source
+              data-srcset="${img.thumbnail}"
+            />
+            <img
+              ref=${this.ref}
+              data-src=${img.thumbnail}
+              src="${placeholderSrc(img.width, img.height)}"
+            />
+          </picture>
         </div>
       </a>
    </li>`;
