@@ -128,6 +128,8 @@ export default class ContentPhoto extends Component {
               ref=${this.ref}
               data-src=${img.thumbnail}
               src="${placeholderSrc(img.width, img.height)}"
+              alt=${img.address}
+              title=${img.address}
             />
           </picture>
         </div>

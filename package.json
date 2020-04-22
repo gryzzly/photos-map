@@ -26,6 +26,7 @@
     "metalsmith-title": "0.0.4",
     "metalsmith-watch": "^1.0.3",
     "node-exiftool": "^2.3.0",
+    "node-fetch": "^2.6.0",
     "node-watch": "^0.6.3",
     "preact": "^10.2.1",
     "preact-render-to-string": "^5.1.4",

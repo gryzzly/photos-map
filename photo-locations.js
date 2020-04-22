@@ -3,12 +3,26 @@ const path = require('path');
 const toGeoJSON = require("@tmcw/togeojson");
 const DOMParser = require("xmldom").DOMParser;
 const simplifyGeoJSON = require('simplify-geojson');
+const fetch = require('node-fetch');
 
 const parseDMS = require('./degrees-minutes-seconds');
+
+const TOKEN = process.env.LOCATION_HQ_TOKEN;
+// with `lat`/`lon` params
+const REVERSE_GEOCODING_ENDPOINT =
+  `https://eu1.locationiq.com/v1/reverse.php?key=${TOKEN}&format=json`;
 
 function parseDate(s) {
   const b = s.split(/\D/);
   return new Date(b[0],b[1]-1,b[2],b[3],b[4],b[5]);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function sequence(tasks, fn) {
+  return tasks.reduce((promise, task) => promise.then(() => fn(task)), Promise.resolve());
 }
 
 module.exports = function (options) {
@@ -81,6 +95,24 @@ module.exports = function (options) {
         };
       })
       .sort((a, b) => a.date - b.date);
+
+    await sequence(imageLocations, async (image) => {
+      let address;
+      try {
+        // the service has 2 reqs/second and 60/minute rate limiting
+        await sleep(1001);
+        const response = await fetch(
+          `${REVERSE_GEOCODING_ENDPOINT}&lat=${image.lat}&lon=${image.lng}`
+        );
+        const json = await response.json();
+        address = json.display_name;
+      } catch (error) {
+        console.log('Reverse geocoding failed:');
+        console.log(error);
+      }
+      image.address = address;
+      return image;
+    });
 
     const imagesByCollection = imageLocations
       .reduce(function (result, current) {
