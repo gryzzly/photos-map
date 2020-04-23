@@ -53,7 +53,7 @@ export default function(file, body) {
   </div><!-- root -->
   <script src="/leaflet.js"></script>
   <script>
-    window.state = ${JSON.stringify(file, null, 2)};
+    window.state = ${JSON.stringify(file)};
   </script>
   <script type="module" src="/script.js"></script>
 

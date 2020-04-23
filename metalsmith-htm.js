@@ -14,14 +14,18 @@ export default function htm(options) {
     .filter(fileName => fileName.endsWith('.html'))
     .forEach(fileName => {
       const file = files[fileName];
+      const props = {
+        url: fileName,
+        contents: file.contents.toString()
+      };
+
+      App.requiredProps.forEach(prop => {
+        props[prop] = file[prop];
+      });
       const body = renderToString(
-        h(App, {
-          ...file,
-          url: fileName,
-          contents: file.contents.toString()
-        })
+        h(App, props)
       );
-      files[fileName].contents = options.document(file, body);
+      files[fileName].contents = options.document(props, body);
     });
 
     done();

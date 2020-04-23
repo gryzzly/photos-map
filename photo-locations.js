@@ -160,7 +160,10 @@ module.exports = function (options) {
         ? files['index.html'].contents.toString()
         : '',
       images: imagesByCollection,
-      list: collections.reverse()
+      list: collections.reverse().map(collection => ({
+        name: collection.name,
+        title: collection.title
+      }))
     };
     done();
   }

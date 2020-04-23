@@ -269,3 +269,11 @@ export default class App extends Component {
     </main>`;
   }
 }
+
+App.requiredProps = [
+  'images',
+  'name',
+  'gpx',
+  'url',
+  'list',
+];
