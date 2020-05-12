@@ -100,6 +100,7 @@ module.exports = function (options) {
           height,
           collection,
           address: file.address,
+          blurhash: file.blurhash,
         };
       })
       .sort((a, b) => a.date - b.date);

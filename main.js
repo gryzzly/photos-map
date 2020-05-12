@@ -13,6 +13,9 @@ import watch from 'metalsmith-watch';
 import serve from 'metalsmith-serve';
 import branch from 'metalsmith-branch';
 
+import { encode } from 'blurhash';
+import jimp from 'jimp';
+
 import { h } from 'preact';
 import renderToString from 'preact-render-to-string';
 import App from './components/App';
@@ -122,11 +125,48 @@ function massageData (files, metalsmith, done) {
   done();
 }
 
+function imageData (img) {
+  return {
+    data: new Uint8ClampedArray(img.bitmap.data),
+    height: img.bitmap.height,
+    width: img.bitmap.width
+  }
+}
+
+async function blurhash(files, metalsmith, done) {
+  await Promise.all(Object.keys(files).map(filename => {
+    return new Promise(resolve => {
+      jimp.read(metalsmith.path(metalsmith.source(), filename))
+      .then(function (img) {
+          jimp.read(
+            img.resize(
+              img.bitmap.width / 32,
+              img.bitmap.height / 32
+            )
+          )
+          .then(function (resizedImg) {
+            const blurhash = encode(
+              resizedImg.bitmap.data,
+              resizedImg.bitmap.width,
+              resizedImg.bitmap.height,
+              4,
+              4
+            );
+            files[filename].blurhash = blurhash;
+            resolve()
+          });
+      });
+    });
+  }));
+  done();
+}
+
 site
   .use(
     branch('**/*.+(jpg|jpeg)')
     .use(viaCache({
       plugins: [
+        blurhash,
         mediaMetadata({paths: '**/*.+(jpg|jpeg)'}),
         massageData,
         reverseGeocode(),

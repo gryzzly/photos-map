@@ -2,6 +2,8 @@ import htm from '../web_modules/htm.js';
 import { h, Component, createRef } from '../web_modules/preact.js';
 const html = htm.bind(h);
 
+import {decode} from '../web_modules/blurhash.js';
+
 import {rafDebounce} from "./util.js";
 
 const placeholderSrc = (width, height) => `data:image/svg+xml,` +
@@ -20,6 +22,7 @@ export default class ContentPhoto extends Component {
   constructor() {
     super();
     this.observer = null;
+    this.blurhash = null;
     this.ref = createRef();
     [
       'onImagePositionsUpdate',
@@ -88,6 +91,38 @@ export default class ContentPhoto extends Component {
   componentDidMount() {
     const imageElement = this.ref.current;
     this.onImagePositionsUpdate();
+
+    const img = this.props.img;
+    const previewWidth = img.width / 32;
+    const previewHeight = img.height / 32;
+
+    // decode hash
+    const pixels = decode(
+      img.blurhash,
+      Math.floor(previewWidth),
+      Math.floor(previewHeight),
+      1
+    );
+
+    const canvas = document.createElement('canvas');
+    canvas.width = previewWidth;
+    canvas.height = previewHeight;
+    const context = canvas.getContext('2d');
+
+    context.putImageData(
+      new ImageData(
+        pixels,
+        Math.floor(previewWidth),
+        Math.floor(previewHeight),
+      ),
+      0,
+      0
+    );
+    canvas.toBlob(blob => {
+      this.blurhash = URL.createObjectURL(blob);
+      this.forceUpdate();
+    }, 'image/jpeg', .75);
+
     imageElement.addEventListener('load', this.onImageLoaded);
     window.addEventListener('resize', this.debouncedUpdate);
 
@@ -116,6 +151,10 @@ export default class ContentPhoto extends Component {
     return html`<li onClickCapture=${this.onClick}>
       <a href="${img.fileName}">
         <div class="imageWrapper">
+          <img
+            class="preview"
+            src="${this.blurhash || placeholderSrc(img.width, img.height)}"
+          />
           <picture>
             <source
               type="image/webp"

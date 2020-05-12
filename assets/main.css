@@ -202,15 +202,14 @@ a:visited {
 }
 
 .contents__images_list .imageWrapper {
-  background: #ccc;
   margin: 0 auto;
   max-width: var(--image-width);
 }
 
 .contents__images_list img {
   display: block;
-  width: 100%;
   max-width: var(--image-width);
+  width: 100%;
   height: auto;
   margin: 0 auto;
   opacity: 0;
@@ -218,12 +217,13 @@ a:visited {
   background: #eee;
 }
 
-.contents__images_list .imageWrapper {
-  background: #ccc;
-  margin: 0 auto;
-  max-width: var(--image-width);
+.contents__images_list .preview {
+  opacity: 1;
+  float: left;
+  margin-right: -100%;
+  height: auto;
+  max-height: 100%;
 }
-
 
 .contents__images_list img.loaded {
   opacity: 1;
