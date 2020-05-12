@@ -29,7 +29,6 @@ export default class App extends Component {
     super();
 
     this.imagePositions = {};
-    this.imagesCount = images[Object.keys(images)[0]].length;
 
     this.state = {
       scrollOffset: 0,
