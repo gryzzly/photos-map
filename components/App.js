@@ -30,6 +30,8 @@ export default class App extends Component {
 
     this.imagePositions = {};
 
+    this.mediaQueryList = null;
+
     this.state = {
       scrollOffset: 0,
       leftTopX: 0,
@@ -43,6 +45,7 @@ export default class App extends Component {
       markers: {},
       lines: {},
       isGalleryOpen: false,
+      orientation: null,
     };
 
     [
@@ -55,6 +58,7 @@ export default class App extends Component {
       'onGalleryClose',
       'onGalleryAdvance',
       'onGalleryBack',
+      'onMediaQueryUpdate',
     ].forEach(function(fn) {
       this[fn] = this[fn].bind(this);
     }, this);
@@ -78,7 +82,23 @@ export default class App extends Component {
     this.state.markers = (url === '/' || url === '/index.html')
       ? {}
       : derivedCoordinates.markers;
+  }
 
+  componentDidMount() {
+    this.mediaQueryList = window.matchMedia("(orientation: landscape)");
+    this.onMediaQueryUpdate(this.mediaQueryList);
+    this.mediaQueryList.addListener(this.onMediaQueryUpdate);
+  }
+
+  componentWillUnmount() {
+    this.mediaQueryList.removeEventListener(this.onMediaQueryUpdate);
+    this.mediaQueryList = null;
+  }
+
+  onMediaQueryUpdate({matches}) {
+    this.setState({
+      orientation: matches ? 'landscape' : 'portrait'
+    });
   }
 
   onMapCollectionClick(collection) {
@@ -113,9 +133,10 @@ export default class App extends Component {
     let itemInViewport;
 
     Object.keys(this.imagePositions).some(element => {
+      const image = this.imagePositions[element];
       const inViewport = isInViewport(
-        this.imagePositions[element],
-        scrollTop - this.imagePositions[element].height / 3
+        image,
+        scrollTop
       );
       if (inViewport) {
         itemInViewport = element;
@@ -135,11 +156,16 @@ export default class App extends Component {
     const {
       currentImage,
       scrollOffset,
+      orientation,
     } = this.state;
 
     const markerPositions = markers || this.state.markerPositions;
 
-    if (!currentImage || !markerPositions[currentImage]) {
+    if (
+      !currentImage ||
+      !markerPositions[currentImage] ||
+      orientation === 'portrait'
+    ) {
       return;
     }
 
@@ -154,13 +180,6 @@ export default class App extends Component {
       rightX: marker.x,
       rightY: marker.y,
     };
-
-    // if (
-    //     (coords.rightX - coords.leftTopX) < 0 ||
-    //     coords.leftTopY > (window.innerHeight - 40)
-    //   ) {
-    //   return false;
-    // }
 
     return coords;
   }
@@ -217,6 +236,7 @@ export default class App extends Component {
       markers,
       selected,
       isGalleryOpen,
+      orientation,
     } = state;
 
     const {
@@ -251,7 +271,7 @@ export default class App extends Component {
       <svg
         class="svg-canvas"
         visibility="${
-          Boolean(currentImage)
+          Boolean(currentImage) && orientation === 'landscape'
             ? 'visible'
             : 'hidden'
         }"

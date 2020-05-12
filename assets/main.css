@@ -47,11 +47,17 @@ html, body, .root, main {
 
 main {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: column;
   padding: 10px;
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 16px;
   line-height: 1.25;
+}
+
+@media (orientation: landscape) {
+  main {
+    flex-direction: row-reverse;
+  }
 }
 
 a:visited {
@@ -131,8 +137,10 @@ a:visited {
 #map {
   flex: 1;
 }
-#map > img {
-  width: 100%;
+@media (orientation: portrait) {
+  #map {
+    border: 10px solid #fff;
+  }
 }
 
 .contents {
@@ -143,9 +151,9 @@ a:visited {
   -webkit-overflow-scrolling: touch;
   direction: rtl;
 }
-@media (max-width: 640px) {
+@media (orientation: portrait) {
   .contents {
-    flex: 2;
+    flex: 2.5;
   }
 }
 
@@ -189,19 +197,14 @@ a:visited {
 .contents__images_list li {
   margin-bottom: 3em;
 }
-@media (max-width: 640px) {
-  .contents__images_list li {
-    margin-bottom: 1em;
-  }
-}
 
 :root {
   --image-width: 32vw;
 }
 
-@media (max-width: 640px) {
+@media (orientation: portrait) {
   :root {
-    --image-width: 100%;
+    --image-width: 70vw;
   }
 }
 
