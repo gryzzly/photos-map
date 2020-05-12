@@ -17,12 +17,9 @@ function parseDate(s) {
   return new Date(b[0],b[1]-1,b[2],b[3],b[4],b[5]);
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function sequence(tasks, fn) {
-  return tasks.reduce((promise, task) => promise.then(() => fn(task)), Promise.resolve());
+function extractTownFromAddress(address) {
+  const parts = address.split(', ').reverse();
+  return `${parts[3]} ${parts[2]}`;
 }
 
 module.exports = function (options) {
@@ -30,7 +27,7 @@ module.exports = function (options) {
   options.collection = options.collection || 'dir';
   options.processImages = false;
 
-  return async function (files, metadata, done) {
+  return async function photoLocationsJob (files, metadata, done) {
     const updatedFiles = {
       processedImages: {},
       collectionPages: {},
@@ -65,9 +62,19 @@ module.exports = function (options) {
 
         result[collection].gpx =
           simplifiedGeoJSON.features.reduce((result, feature) => {
-            feature.geometry.coordinates.forEach(([lng, lat]) => {
-              result.path.push({ lat, lng });
+            const {properties: {coordTimes}} = feature;
+
+            feature.geometry.coordinates.forEach(([lng, lat], index) => {
+              result.path.push({
+                lat,
+                lng,
+              });
             });
+
+            result.duration =
+                Date.parse(coordTimes[coordTimes.length - 1]) -
+                Date.parse(coordTimes[0]);
+
             return result;
           }, { path: [] });
 
@@ -92,27 +99,10 @@ module.exports = function (options) {
           width,
           height,
           collection,
+          address: file.address,
         };
       })
       .sort((a, b) => a.date - b.date);
-
-    await sequence(imageLocations, async (image) => {
-      let address;
-      try {
-        // the service has 2 reqs/second and 60/minute rate limiting
-        await sleep(1001);
-        const response = await fetch(
-          `${REVERSE_GEOCODING_ENDPOINT}&lat=${image.lat}&lon=${image.lng}`
-        );
-        const json = await response.json();
-        address = json.display_name;
-      } catch (error) {
-        console.log('Reverse geocoding failed:');
-        console.log(error);
-      }
-      image.address = address;
-      return image;
-    });
 
     const imagesByCollection = imageLocations
       .reduce(function (result, current) {
@@ -128,7 +118,7 @@ module.exports = function (options) {
 
         return {
           path: collectionName + '.html',
-          contents: indexExists ? indexFile.contents : Buffer.from(collectionName),
+          contents: indexExists ? indexFile.contents : '',
           title: indexExists  ? indexFile.title : '',
           name: collectionName,
         }
@@ -137,17 +127,35 @@ module.exports = function (options) {
     // update or create index files for collection keys
     collections.forEach(function (collection) {
       const collectionName = collection.name;
+      const collectionImages = imagesByCollection[collectionName];
+      const firstImage = collectionImages[0];
+      const lastImage = collectionImages[collectionImages.length - 1];
+      const from = extractTownFromAddress(firstImage.address);
+      const to = extractTownFromAddress(lastImage.address);
+      const hasGPX = gpxFilesByCollection[collectionName];
+
+      const duration = hasGPX
+          ? gpxFilesByCollection[collectionName].gpx.duration
+          : lastImage.date - firstImage.date;
+
+      const generatedTitle = from === to
+        ? (duration / 1000 / 60 / 60) > 4
+          ? `A long loop from ${from}`
+          : `A loop from ${from}`
+        : `From ${from} to ${to}`;
+
+      Object.assign(collection, {
+        path: collectionName + '/index.html',
+        images: {
+          [collectionName]: collectionImages
+        },
+        duration,
+        gpx: hasGPX && gpxFilesByCollection[collectionName].gpx.path,
+        title: collection.title || generatedTitle,
+      })
 
       files[collectionName + '/index.html'] = {
-        path: collectionName + '/index.html',
         ...collection,
-        contents: collection.contents.toString(),
-        images: {
-          [collectionName]: imagesByCollection[collectionName]
-        },
-        gpx:
-            gpxFilesByCollection[collectionName] &&
-            gpxFilesByCollection[collectionName].gpx,
       };
     });
 
@@ -160,10 +168,12 @@ module.exports = function (options) {
         ? files['index.html'].contents.toString()
         : '',
       images: imagesByCollection,
-      list: collections.reverse().map(collection => ({
-        name: collection.name,
-        title: collection.title
-      }))
+      list: collections.reverse().map(collection => {
+        return {
+          name: collection.name,
+          title: collection.title
+        }
+      })
     };
     done();
   }

@@ -72,7 +72,7 @@ export default class App extends Component {
       });
 
     this.state.lines = gpx
-      ? {[url]: gpx.path}
+      ? {[url]: gpx}
       : derivedCoordinates.lines;
 
     this.state.markers = (url === '/' || url === '/index.html')
@@ -272,7 +272,9 @@ export default class App extends Component {
 App.requiredProps = [
   'images',
   'name',
+  'title',
   'gpx',
+  'duration',
   'url',
   'list',
 ];

@@ -16,7 +16,7 @@ module.exports = function(options) {
     nocase: true,
   });
 
-  return function(files, metalsmith, done) {
+  return function mediaMetadata(files, metalsmith, done) {
     if (!Object.keys(files).some(file => matcher.match(file))) {
       return done();
     }

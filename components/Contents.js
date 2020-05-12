@@ -2,7 +2,6 @@ import htm from '../web_modules/htm.js';
 import { h, Component, createRef } from '../web_modules/preact.js';
 const html = htm.bind(h);
 
-import LinkToItem from './LinkToItem.js';
 import ContentPhoto from "./ContentPhoto.js";
 
 import {rafDebounce} from "./util.js";
@@ -40,19 +39,40 @@ export default class Contents extends Component {
     const contents = props.contents || '';
     const images = props.images || {};
     const name = props.name || '';
+    const gpx = props.gpx;
+    const duration = props.duration;
     const onMount = props.onMount;
     const onGalleryOpen = props.onGalleryOpen;
+    const title = props.title;
+
+    let durationInHours, fullHours;
+    if (duration) {
+      durationInHours = duration / 1000 / 60 / 60;
+      fullHours = Math.ceil(durationInHours);
+    }
 
     return html`<div class="contents" ref=${this.ref}>
-      <h1 class="contents__title">
+
+    <h1 class="contents__title">
         <a href="/">Home</a>
       </h1>
-      <!-- Generated HTML Contents i.e. Markdown -->
-      ${contents.length > 0 && html`<div>${html([contents])}</div>`}
+
+      ${title && html`<h4>${title}</h4>`}
+
+      ${duration && html`<div>
+        This trip took us about ${fullHours} hours.
+      </div>`}
+
+        <!-- Generated HTML Contents i.e. Markdown -->
+        ${contents.length > 0 && html`<div>
+          ${html([contents])}
+        </div>`}
 
       <!-- Index Page -->
       ${list.length > 0 && html`<ul class="contents__stories_list">
-        ${list.map(collection => html`<${LinkToItem} ...${collection} />`)}
+        ${list.map(({name, title}) => html`<li>
+          <a href="/${name}/index.html">${title ? `${name} – ${title}` : name}</a>
+        </li>`)}
       </ul>`}
 
       <!-- Image Gallery  -->

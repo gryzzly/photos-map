@@ -24,7 +24,7 @@ class Image extends Component {
   render() {
     const {updated} = this.state;
     const {src, lqipSrc} = this.props;
-    console.log(src);
+
     return html`<div>
       ${updated
         ? null
