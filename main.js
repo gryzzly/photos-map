@@ -176,7 +176,7 @@ site
 
 site
   .use(markdown())
-  .use(title())
+  .use(title({ remove: true }))
   .use(photoLocations())
     // render component tree with file data
   .use(htm({

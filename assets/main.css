@@ -157,7 +157,11 @@ a:visited {
   list-style: none;
 }
 
-.contents h1 {
+.contents h1,
+.contents h2,
+.contents h3,
+.contents h4,
+.contents div {
   margin-bottom: 1em;
 }
 .contents p {

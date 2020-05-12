@@ -57,11 +57,11 @@ export default class Contents extends Component {
         <a href="/">Home</a>
       </h1>
 
-      ${title && html`<h4>${title}</h4>`}
-
       ${duration && html`<div>
         This trip took us about ${fullHours} hours.
       </div>`}
+
+      ${title && html`<h1>${title}</h1>`}
 
         <!-- Generated HTML Contents i.e. Markdown -->
         ${contents.length > 0 && html`<div>
