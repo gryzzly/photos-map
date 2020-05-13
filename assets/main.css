@@ -16,7 +16,6 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 100vh;
   width: 100%;
   pointer-events: none;
   z-index: 9999;
@@ -41,14 +40,12 @@
 
 html, body, .root, main {
   height: 100%;
-  height: 100vh;
   overflow: hidden;
 }
 
 main {
   display: flex;
   flex-direction: column;
-  padding: 10px;
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 16px;
   line-height: 1.25;
@@ -80,7 +77,6 @@ a:visited {
 
 .image-gallery img {
   max-width: 95%;
-  max-height: 95vh;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -93,7 +89,6 @@ a:visited {
 @media screen and (min-width: 1650px) {
   .image-gallery img {
     max-width: 85%;
-    max-height: 85vh;
     width: 85%;
     height: 85%;
   }
@@ -134,13 +129,14 @@ a:visited {
   padding: 3%;
 }
 
-#map {
+.map-container {
   flex: 1;
+  padding: 10px;
+  background: #fff;
+  z-index: 1;
 }
-@media (orientation: portrait) {
-  #map {
-    border: 10px solid #fff;
-  }
+.map-container > #map {
+  height: 100%;
 }
 
 .contents {
@@ -248,5 +244,5 @@ a:visited {
 .leaflet-marker-current > img {
   top: -32px;
   right: -6px;
-  filter: grayscale(0) opacity(.85);
+  filter: opacity(.85);
 }

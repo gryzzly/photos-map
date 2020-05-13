@@ -245,14 +245,16 @@ export default class App extends Component {
     } = props;
 
     return html`<main>
-      <${Map}
-        lines=${lines}
-        markers=${markers}
-        onMount=${this.setMarkerPositions}
-        onCollectionClick=${this.onMapCollectionClick}
-        currentImage=${currentImage}
-        onMarkerClick=${this.onMarkerClick}
-      />
+      <div class="map-container">
+        <${Map}
+          lines=${lines}
+          markers=${markers}
+          onMount=${this.setMarkerPositions}
+          onCollectionClick=${this.onMapCollectionClick}
+          currentImage=${currentImage}
+          onMarkerClick=${this.onMarkerClick}
+        />
+      </div>
       <${Contents}
         ...${props}
         onMount=${this.setImagePositions}
