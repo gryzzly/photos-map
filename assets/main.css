@@ -135,9 +135,10 @@ a:visited {
   padding: 10px;
   background: #fff;
   z-index: 1;
+  display: flex;
 }
 .map-container > #map {
-  height: 100%;
+  flex: 1
 }
 
 .contents {
