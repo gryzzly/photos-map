@@ -202,23 +202,28 @@ site
     destination: './web_modules'
   }));
 
-  site
-    .build(function(err) {
-      if (err) {
-        console.log('Error building:' + err);
-        throw new Error(err);
-      }
-    // this way first run of the build doesn’t depend on slow
-    // share image processing
-    site
-    .use(sharp(sharpConfig))
-    .build(function(err) {
-      if (err) {
-        console.log('Error building:' + err);
-        throw new Error(err);
-      }
-      console.log('Second build successfully.')
-    })
+  const sharpPlugin =
+    sharp(sharpConfig);
 
-      console.log('Built successfully.')
+  Object.defineProperty(
+    sharpPlugin,
+    'name',
+    {
+      value: 'sharpJob'
+    }
+  );
+
+  site
+    .use(
+      branch('**/*.+(jpg|jpeg)')
+      .use(viaCache({
+        plugins: [sharpPlugin]
+      }))
+    )
+    .build(function(err) {
+      if (err) {
+        console.log('Error building:' + err);
+        throw new Error(err);
+      }
+      console.log('Built successfully.');
     });
